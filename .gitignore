@@ -1,0 +1,6 @@
+
+*.h.gch
+*.o
+*.pyc
+*.dat
+*.pyd
