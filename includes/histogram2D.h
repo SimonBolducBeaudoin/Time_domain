@@ -1,7 +1,5 @@
 #pragma once
 
-
-#include "../includes/omp_extra.h"
 #include "../includes/histogram2D_float.h"
 #include "../includes/histogram2D_int.h"
 

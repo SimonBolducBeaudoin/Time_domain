@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../includes/common.h"
+#include "../includes/omp_extra.h"
 #include "../includes/buffered_array.h"
 
 /*

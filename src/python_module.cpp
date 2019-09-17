@@ -11,5 +11,6 @@ PYBIND11_MODULE(time_domain, m)
 	init_fft_benchmarks(m);
 	init_histograms(m);
 	init_fast_convolution(m);
+	init_buffered_array(m);
 }
 

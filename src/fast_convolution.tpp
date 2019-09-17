@@ -2,9 +2,10 @@
 template <class OutputType, class KernelType, class DataType, class ComplexType>
 Mother_Fast_Conv<OutputType,KernelType,DataType,ComplexType>::Mother_Fast_Conv
 (	
-	uint64_t L_kernel,  uint64_t L_data, uint32_t L_FFT, std::string Convolution_type
+	uint64_t L_kernel,  uint64_t L_data, uint32_t L_FFT, std::string Convolution_type, int n_threads
 ):
 	L_FFT(L_FFT) , Convolution_type(Convolution_type),
+	n_threads(n_threads) ,
 	L_kernel(L_kernel) , L_data(L_data),
 	kernel(NULL), data(NULL), output(NULL)
 {
@@ -16,6 +17,8 @@ Mother_Fast_Conv<OutputType,KernelType,DataType,ComplexType>::Mother_Fast_Conv
 	// Checks for errors cast type and allocate memory for pointers and declare numpy arrays.
 	checks();
 	cast_and_alloc();
+	
+	set_n_threads( n_threads );
 	
 }
 
@@ -72,6 +75,14 @@ void Mother_Fast_Conv<OutputType,KernelType,DataType,ComplexType>::set_L_FFT( ui
 	
 	checks();
 };
+
+template <class OutputType, class KernelType, class DataType, class ComplexType>
+void Mother_Fast_Conv<OutputType,KernelType,DataType,ComplexType>::set_n_threads( int n_threads )
+{
+	this->n_threads = n_threads ;
+	// For now threads are managed by FFTW's parrallel functionnalities
+	// omp_set_num_threads(n_threads);
+}
 								
 template <class OutputType, class KernelType, class DataType, class ComplexType>
 void Mother_Fast_Conv<OutputType,KernelType,DataType,ComplexType>::print_all_attributes()
@@ -101,7 +112,7 @@ void Mother_Fast_Conv<OutputType,KernelType,DataType,ComplexType>::Conv_basic( K
 	{
 		for(uint64_t j = 0; j <= i  ; j++)
 		{	
-			h[i] += (OutputType)f[j] * (OutputType)g[(i - j)]  ;
+			h[i] += (OutputType) ( f[j] * g[(i - j)] ) ;
 		}
 	}
 	// Middle (This is also the valid part)
@@ -111,7 +122,7 @@ void Mother_Fast_Conv<OutputType,KernelType,DataType,ComplexType>::Conv_basic( K
 	{
 		for(uint64_t j=0; j < L_kernel ; j++)
 		{
-			h[i+translation] += (OutputType)g[ (L_kernel - 1) - j + i] * (OutputType)f[j] ;
+			h[i+translation] += (OutputType)(g[ (L_kernel - 1) - j + i] * f[j] ) ;
 		}
 	}
 	// end
@@ -121,24 +132,232 @@ void Mother_Fast_Conv<OutputType,KernelType,DataType,ComplexType>::Conv_basic( K
 	{
 		for(uint64_t j=0; j <= i ; j++)
 		{
-			h[end_full-i] += (OutputType)f[(L_kernel-1)-j] * (OutputType)g[(L_data - 1)-i+j] ;
+			h[end_full-i] += (OutputType)(f[(L_kernel-1)-j]  * g[(L_data - 1)-i+j] ) ;
 		}
 	}
 }
 
+////////////////////////////////////////////
+//// Child class partial specialization
 
-//////// Specializations
+// Constructors
+template <class OutputType, class KernelType, class DataType>
+Fast_Conv<OutputType,KernelType,DataType,complex_f>::Fast_Conv 
+	(
+	uint64_t L_kernel , uint64_t L_data, uint32_t L_FFT , std::string Convolution_type , int n_threads
+	)
+	: Mother_Fast_Conv<OutputType,KernelType,DataType,complex_f>(L_kernel , L_data , L_FFT , Convolution_type, n_threads)
+{	
+	fftwf_import_wisdom_from_filename("FFTWF_Wisdom.dat");
+}
 
+template <class OutputType, class KernelType, class DataType>
+Fast_Conv<OutputType,KernelType,DataType,complex_d>::Fast_Conv 
+	(
+	uint64_t L_kernel , uint64_t L_data, uint32_t L_FFT , std::string Convolution_type , int n_threads
+	)
+	: Mother_Fast_Conv<OutputType,KernelType,DataType,complex_d>(L_kernel , L_data , L_FFT , Convolution_type, n_threads)
+{	
+	fftw_import_wisdom_from_filename("FFTW_Wisdom.dat");
+}
+
+// Destructors
+template <class OutputType, class KernelType, class DataType>
+Fast_Conv<OutputType,KernelType,DataType,complex_f>::~Fast_Conv()
+{
+fftwf_export_wisdom_to_filename("FFTWF_Wisdom.dat");
+
+fftwf_destroy_plan(kernel_plan); 
+fftwf_destroy_plan(g_plan); 
+fftwf_destroy_plan(h_plan); 
+
+fftwf_free(kernel_complex); 
+fftwf_free(g); 
+fftwf_free(h); 
+
+fftwf_cleanup(); 
+fftwf_cleanup_threads();
+}
+template <class OutputType, class KernelType, class DataType>
+Fast_Conv<OutputType,KernelType,DataType,complex_d>::~Fast_Conv()
+{
+fftw_export_wisdom_to_filename("FFTW_Wisdom.dat");
+
+fftw_destroy_plan(kernel_plan); 
+fftw_destroy_plan(g_plan); 
+fftw_destroy_plan(h_plan); 
+
+fftw_free(kernel_complex); 
+fftw_free(g); 
+fftw_free(h); 
+
+fftw_cleanup(); 
+fftw_cleanup_threads();
+}
+
+// PREPARES METHODS
+template <class OutputType, class KernelType, class DataType>
+void Fast_Conv<OutputType,KernelType,DataType,complex_f>::prepare()
+{
+	uint32_t L_FFT = this->L_FFT;
+	int n_threads = this->n_threads;
+
+	if ( this->Convolution_type == "fft" )
+	{	
+		kernel_complex = (complex_f*)fftwf_malloc( 2*(L_FFT/2+1) * sizeof(float) ); // For memory alignment
+		
+		// For in-place transforms g as 2( n/2 + 1 )  elements. The elements beyond the first n are unused padding.
+		g = (complex_f*)fftwf_malloc( 2 * (L_FFT/2+1) * sizeof(float) ); // fftwf_malloc for memory alignment 
+		h = (complex_f*)fftwf_malloc( 2 * (L_FFT/2+1) * sizeof(float) ); // fftwf_malloc for memory alignment 
+		
+		// Must be declared before any plan
+		fftwf_plan_with_nthreads( n_threads );
+		// Prepare plan for real to half complex transform
+		kernel_plan = fftwf_plan_dft_r2c_1d( L_FFT , (float*)kernel_complex , reinterpret_cast<fftwf_complex*>(kernel_complex) , FFTW_EXHAUSTIVE); // in-place fft
+		// Prepare plans : r2c and c2r
+		g_plan = fftwf_plan_dft_r2c_1d( L_FFT , (float*)g , reinterpret_cast<fftwf_complex*>(h) , FFTW_EXHAUSTIVE);
+			//  in-place transform of h.
+			//The c2r transform destroys its input array even for out-of-place transforms
+		h_plan = fftwf_plan_dft_c2r_1d( L_FFT, reinterpret_cast<fftwf_complex*>(h) , (float*)h , FFTW_EXHAUSTIVE); 	
+	}
+	else if ( this->Convolution_type == "basic" )
+	{
+	 /*PLACE HOLDER*/
+	}
+	else 
+	{
+		throw std::runtime_error("Convolution_type attribute is invalid.");
+	}
+}
+
+template <class OutputType, class KernelType, class DataType>
+void Fast_Conv<OutputType,KernelType,DataType,complex_d>::prepare()
+{
+	
+	uint32_t L_FFT = this->L_FFT;
+	int n_threads = this->n_threads;
+
+	if ( this->Convolution_type == "fft" )
+	{	
+		kernel_complex = (complex_d*)fftw_malloc( 2*(L_FFT/2+1) * sizeof(double) ); // For memory alignment
+		
+		// For in-place transforms g as 2( n/2 + 1 )  elements. The elements beyond the first n are unused padding.
+		g = (complex_d*)fftw_malloc( 2 * (L_FFT/2+1) * sizeof(double) ); // fftw_malloc for memory alignment 
+		h = (complex_d*)fftw_malloc( 2 * (L_FFT/2+1) * sizeof(double) ); // fftw_malloc for memory alignment 
+		
+		// Must be declared before any plan
+		fftw_plan_with_nthreads( n_threads );
+		// Prepare plan for real to half complex transform
+		kernel_plan = fftw_plan_dft_r2c_1d( L_FFT , (double*)kernel_complex , reinterpret_cast<fftw_complex*>(kernel_complex) , FFTW_EXHAUSTIVE); // in-place fft
+		// Prepare plans : r2c and c2r
+		g_plan = fftw_plan_dft_r2c_1d( L_FFT , (double*)g , reinterpret_cast<fftw_complex*>(h) , FFTW_EXHAUSTIVE);
+			//  in-place transform of h.
+			//The c2r transform destroys its input array even for out-of-place transforms
+		h_plan = fftw_plan_dft_c2r_1d( L_FFT, reinterpret_cast<fftw_complex*>(h) , (double*)h , FFTW_EXHAUSTIVE); 	
+	}
+	else if ( this->Convolution_type == "basic" )
+	{
+	 /*PLACE HOLDER*/
+	}
+	else 
+	{
+		throw std::runtime_error("Convolution_type attribute is invalid.");
+	}
+}
+
+// EXCUTIONS METHODS
 template <class OutputType, class KernelType, class DataType>
 void Fast_Conv<OutputType,KernelType,DataType,complex_f>::execute()
 {
 	KernelType* kernel = this->kernel;
 	DataType* data = this->data;
 	OutputType* output = this->output;
+	
+	uint64_t L_kernel = this->L_kernel;
+	uint32_t L_FFT = this->L_FFT;
+	uint64_t N_chunks = this->N_chunks;
+	uint64_t L_chunk = this->L_chunk;
+	uint64_t L_reste = this->L_reste;
 
 	if ( this->Convolution_type == "fft" )
 	{	
-		Conv_FFT( kernel , data , output );
+		///////////////////////////////////////////////
+		//// KERNEL FFT
+		// Value assignment and zero padding
+		for(uint64_t i = 0 ; i < L_kernel ; i++){
+			( (float*)kernel_complex )[i] = (float)kernel[i] ; // Convert IntType to float
+		}
+		for(uint64_t i = L_kernel ; i < L_FFT ; i++){
+			( (float*)kernel_complex )[i] = 0 ; //zero padding
+		}
+		fftwf_execute(kernel_plan); // f now contains the results of the fft
+		///////////////////////////////////////////////
+		
+		// For zero padding
+		for(uint64_t j=0; j < (L_FFT/2+1) ; j++)
+		{
+			g[j] = 0;
+		}
+		
+		// loop on chunks and add the fft result to Out
+		///// The chunks ---->
+		for(uint64_t i=0; i < N_chunks ; i++)
+		//for(uint64_t i=0; i < 1 ; i++)
+		{
+			uint64_t j;
+			// Copie-paste the right part of Data into g
+			for(j=0; j < L_chunk ; j++)
+			{
+				( (float*)g )[j] = ( (float)data[i*L_chunk + j] );
+			}
+			// execute the transform of g 
+			fftwf_execute(g_plan); // g now contains the results of the DFT of g
+			
+			//multiplication de kernel_complex et h
+			for(j=0; j < (L_FFT/2+1) ; j++)
+			{
+				h[j] = kernel_complex[j] * h[j];
+			}
+			
+			fftwf_execute(h_plan);  // h now contains the results of the chunk's contribution to the convolution product
+			
+			for(j=0; j < L_FFT ; j++)
+			{
+				output[i*L_chunk+j] += (OutputType)( ( ( (float*)h )[j] )/L_FFT );
+			}
+		}
+		/////
+		///// The rest ---->
+			if (L_reste != 0)
+			{	
+				uint64_t j;
+				// make sure g only contains zeros
+				for(j=0; j < L_FFT ; j++)
+				{
+					( (float*)g )[j] = 0 ;
+				}
+				// add the rest
+				for(j=0; j < L_reste ; j++)
+				{
+					( (float*)g )[j] = ( (float) data[N_chunks*L_chunk + j] );
+				}
+				// execute the transform of g 
+				fftwf_execute(g_plan); // h now contains the results of the DFT of g
+				// in-place multiplication de kernel_complex et h (aussi half complexe)
+				for(j=0; j < (L_FFT/2+1) ; j++)
+				{
+					h[j] = kernel_complex[j] * h[j];
+				}
+				fftwf_execute(h_plan);  // g now contains the results of the chunk's contribution to the convolution product
+			
+				// Select only the part of the ifft that contributes to the full output length
+				for(j = 0 ; j < L_reste + L_kernel - 1 ; j++ ){
+					output[N_chunks*L_chunk+j] += (OutputType)( ( ( (float*)h )[j] )/L_FFT );
+				}
+				// Out now contains the full length convolution
+			}
+		/////
+		
 	}
 	else if ( this->Convolution_type == "basic" )
 	{
@@ -157,10 +376,92 @@ void Fast_Conv<OutputType,KernelType,DataType,complex_d>::execute()
 	KernelType* kernel = this->kernel;
 	DataType* data = this->data;
 	OutputType* output = this->output;
+	
+	uint64_t L_kernel = this->L_kernel;
+	uint32_t L_FFT = this->L_FFT;
+	uint64_t N_chunks = this->N_chunks;
+	uint64_t L_chunk = this->L_chunk;
+	uint64_t L_reste = this->L_reste;
 
 	if ( this->Convolution_type == "fft" )
 	{	
-		Conv_FFT( kernel , data , output );
+		///////////////////////////////////////////////
+		//// KERNEL FFT
+		// Value assignment and zero padding
+		for(uint64_t i = 0 ; i < L_kernel ; i++){
+			( (double*)kernel_complex )[i] = (double)kernel[i] ; // Convert IntType to double
+		}
+		for(uint64_t i = L_kernel ; i < L_FFT ; i++){
+			( (double*)kernel_complex )[i] = 0 ; //zero padding
+		}
+		fftw_execute(kernel_plan); // f now contains the results of the fft
+		///////////////////////////////////////////////
+		
+		// For zero padding
+		for(uint64_t j=0; j < (L_FFT/2+1) ; j++)
+		{
+			g[j] = 0;
+		}
+		
+		// loop on chunks and add the fft result to Out
+		///// The chunks ---->
+		for(uint64_t i=0; i < N_chunks ; i++)
+		//for(uint64_t i=0; i < 1 ; i++)
+		{
+			uint64_t j;
+			// Copie-paste the right part of Data into g
+			for(j=0; j < L_chunk ; j++)
+			{
+				( (double*)g )[j] = ( (double)data[i*L_chunk + j] );
+			}
+			// execute the transform of g 
+			fftw_execute(g_plan); // g now contains the results of the DFT of g
+			
+			//multiplication de kernel_complex et h
+			for(j=0; j < (L_FFT/2+1) ; j++)
+			{
+				h[j] = kernel_complex[j] * h[j];
+			}
+			
+			fftw_execute(h_plan);  // h now contains the results of the chunk's contribution to the convolution product
+			
+			for(j=0; j < L_FFT ; j++)
+			{
+				output[i*L_chunk+j] += (OutputType)( ( ( (double*)h )[j] )/L_FFT );
+			}
+		}
+		/////
+		///// The rest ---->
+			if (L_reste != 0)
+			{	
+				uint64_t j;
+				// make sure g only contains zeros
+				for(j=0; j < L_FFT ; j++)
+				{
+					( (double*)g )[j] = 0 ;
+				}
+				// add the rest
+				for(j=0; j < L_reste ; j++)
+				{
+					( (double*)g )[j] = ( (double) data[N_chunks*L_chunk + j] );
+				}
+				// execute the transform of g 
+				fftw_execute(g_plan); // h now contains the results of the DFT of g
+				// in-place multiplication de kernel_complex et h (aussi half complexe)
+				for(j=0; j < (L_FFT/2+1) ; j++)
+				{
+					h[j] = kernel_complex[j] * h[j];
+				}
+				fftw_execute(h_plan);  // g now contains the results of the chunk's contribution to the convolution product
+			
+				// Select only the part of the ifft that contributes to the full output length
+				for(j = 0 ; j < L_reste + L_kernel - 1 ; j++ ){
+					output[N_chunks*L_chunk+j] += (OutputType)( ( ( (double*)h )[j] )/L_FFT );
+				}
+				// Out now contains the full length convolution
+			}
+		/////
+		
 	}
 	else if ( this->Convolution_type == "basic" )
 	{
@@ -172,262 +473,3 @@ void Fast_Conv<OutputType,KernelType,DataType,complex_d>::execute()
 	}
 		
 }
-
-template <class OutputType, class KernelType, class DataType>
-inline void Fast_Conv<OutputType,KernelType,DataType,complex_f>::FFT_kernel(const KernelType* In, complex_f* Out)
-{	
-	uint64_t L_kernel = this->L_kernel;
-	uint32_t L_FFT = this->L_FFT;
-	
-	// Tries to load wisdom if it exists
-	fftwf_import_wisdom_from_filename("FFTWF_Wisdom.dat");
-	
-	fftwf_plan f_plan;
-	
-	// Prepare plan for real to half complex transform
-	f_plan = fftwf_plan_dft_r2c_1d( L_FFT , (float*)Out , reinterpret_cast<fftwf_complex*>(Out) , FFTW_EXHAUSTIVE); // in-place fft
-	// Value assignment and zero padding
-	for(uint64_t i = 0 ; i < L_kernel ; i++){
-		( (float*)Out )[i] = ( (float)In[i] ) ; // Convert IntType to float
-	}
-	for(uint64_t i = L_kernel ; i < L_FFT ; i++){
-		( (float*)Out )[i] = 0 ; //zero padding
-	}
-	fftwf_execute(f_plan); // f now contains the results of the fft
-	
-	// Saving wisdom for future use
-	fftwf_export_wisdom_to_filename("FFTWF_Wisdom.dat");
-	
-	fftwf_destroy_plan(f_plan); 	
-}
-
-template <class OutputType, class KernelType, class DataType>
-inline void Fast_Conv<OutputType,KernelType,DataType,complex_d>::FFT_kernel(const KernelType* In, complex_d* Out)
-{	
-	uint64_t L_kernel = this->L_kernel;
-	uint32_t L_FFT = this->L_FFT;
-	// Tries to load wisdom if it exists
-	fftw_import_wisdom_from_filename("FFTW_Wisdom.dat");
-	
-	fftw_plan f_plan;
-	
-	// Prepare plan for real to half complex transform
-	f_plan = fftw_plan_dft_r2c_1d( L_FFT , (double*)Out , reinterpret_cast<fftw_complex*>(Out) , FFTW_EXHAUSTIVE); // in-place fft
-	// Value assignment and zero padding
-	for(uint64_t i = 0 ; i < L_kernel ; i++){
-		( (double*)Out )[i] = ( (double)In[i] ) ; // Convert IntType to float
-	}
-	for(uint64_t i = L_kernel ; i < L_FFT ; i++){
-		( (double*)Out )[i] = 0 ; //zero padding
-	}
-	fftw_execute(f_plan); // f now contains the results of the fft
-	
-	// Saving wisdom for future use
-	fftw_export_wisdom_to_filename("FFTW_Wisdom.dat");
-	
-	fftw_destroy_plan(f_plan); 	
-}
-
-template <class OutputType, class KernelType, class DataType>
-inline void Fast_Conv<OutputType,KernelType,DataType,complex_f>::Conv_FFT(const KernelType* Kernel ,const DataType* Data , OutputType* Out )
-{
-	uint64_t L_kernel = this->L_kernel;
-	uint32_t L_FFT = this->L_FFT;
-	uint64_t N_chunks = this->N_chunks;
-	uint64_t L_chunk = this->L_chunk;
-	uint64_t L_reste = this->L_reste;
-	
-	// Tries to load wisdom if it exists
-	fftwf_import_wisdom_from_filename("FFTWF_Wisdom.dat");
-		
-	// Kernel et fft kernel 
-	complex_f* f_HalfC = (complex_f*)fftwf_malloc( 2*(L_FFT/2+1) * sizeof(float) ); // For memory alignment
-	FFT_kernel( Kernel , f_HalfC );
-		
-	// Output_type specific declarations
-	fftwf_plan g_plan;
-	fftwf_plan h_plan;
-	
-	// For in-place transforms g as 2( n/2 + 1 )  elements. The elements beyond the first n are unused padding.
-	complex_f* g = (complex_f*)fftwf_malloc( 2 * (L_FFT/2+1) * sizeof(float) ); // fftwf_malloc for memory alignment 
-	complex_f* h = (complex_f*)fftwf_malloc( 2 * (L_FFT/2+1) * sizeof(float) ); // fftwf_malloc for memory alignment 
-	// For zero padding
-	for(uint64_t j=0; j < (L_FFT/2+1) ; j++)
-	{
-		g[j] = 0;
-	}
-	
-	// Prepare plans : r2c and c2r
-	g_plan = fftwf_plan_dft_r2c_1d( L_FFT , (float*)g , reinterpret_cast<fftwf_complex*>(h) , FFTW_EXHAUSTIVE);
-		//  in-place transform of h.
-		//The c2r transform destroys its input array even for out-of-place transforms
-	h_plan = fftwf_plan_dft_c2r_1d( L_FFT, reinterpret_cast<fftwf_complex*>(h) , (float*)h , FFTW_EXHAUSTIVE); 
-	
-	// loop on chunks and add the fft result to Out
-	///// The chunks ---->
-	for(uint64_t i=0; i < N_chunks ; i++)
-	//for(uint64_t i=0; i < 1 ; i++)
-	{
-		uint64_t j;
-		// Copie-paste the right part of Data into g
-		for(j=0; j < L_chunk ; j++)
-		{
-			( (float*)g )[j] = ( (float)( Data[i*L_chunk + j] ) );
-		}
-		// execute the transform of g 
-		fftwf_execute(g_plan); // h now contains the results of the DFT of g
-		
-		//multiplication de f_HalfC et h
-		for(j=0; j < (L_FFT/2+1) ; j++)
-		{
-			h[j] = f_HalfC[j] * h[j];
-		}
-		
-		fftwf_execute(h_plan);  // g now contains the results of the chunk's contribution to the convolution product
-		
-		for(j=0; j < L_FFT ; j++)
-		{
-			Out[i*L_chunk+j] += (OutputType)( ( ( (float*)h )[j] )/L_FFT );
-		}
-	}
-	/////
-	///// The rest ---->
-		if (L_reste != 0)
-		{	
-			uint64_t j;
-			// make sure g only contains zeros
-			for(j=0; j < L_FFT ; j++)
-			{
-				( (float*)g )[j] = 0 ;
-			}
-			// add the rest
-			for(j=0; j < L_reste ; j++)
-			{
-				( (float*)g )[j] = ( (float) Data[N_chunks*L_chunk + j] );
-			}
-			// execute the transform of g 
-			fftwf_execute(g_plan); // h now contains the results of the DFT of g
-			// in-place multiplication de f_HalfC et h (aussi half complexe)
-			for(j=0; j < (L_FFT/2+1) ; j++)
-			{
-				h[j] = f_HalfC[j] * h[j];
-			}
-			fftwf_execute(h_plan);  // g now contains the results of the chunk's contribution to the convolution product
-		
-			// Select only the part of the ifft that contributes to the full output length
-			for(j = 0 ; j < L_reste + L_kernel - 1 ; j++ ){
-				Out[N_chunks*L_chunk+j] += (OutputType)( ( ( (float*)h )[j] )/L_FFT );
-			}
-			// Out now contains the full length convolution
-		}
-	/////
-	// Saving wisdom for future use
-	fftwf_export_wisdom_to_filename("FFTWF_Wisdom.dat");
-	
-	// free and cleanup
-	fftwf_free(g); 
-	fftwf_cleanup(); 
-}
-
-template <class OutputType, class KernelType, class DataType>
-inline void Fast_Conv<OutputType,KernelType,DataType,complex_d>::Conv_FFT(const KernelType* Kernel ,const DataType* Data , OutputType* Out )
-{
-	uint64_t L_kernel = this->L_kernel;
-	uint32_t L_FFT = this->L_FFT;
-	uint64_t N_chunks = this->N_chunks;
-	uint64_t L_chunk = this->L_chunk;
-	uint64_t L_reste = this->L_reste;
-	
-	// Tries to load wisdom if it exists
-	fftw_import_wisdom_from_filename("FFTW_Wisdom.dat");
-		
-	// Kernel et fft kernel 
-	complex_d* f_HalfC = (complex_d*)fftwf_malloc( 2*(L_FFT/2+1) * sizeof(double) ); // For memory alignment
-	FFT_kernel( Kernel , f_HalfC );
-		
-	// Output_type specific declarations
-	fftw_plan g_plan;
-	fftw_plan h_plan;
-	
-	// For in-place transforms g as 2( n/2 + 1 )  elements. The elements beyond the first n are unused padding.
-	complex_d* g = (complex_d*)fftw_malloc( 2 * (L_FFT/2+1) * sizeof(double) ); // fftw_malloc for memory alignment 
-	complex_d* h = (complex_d*)fftw_malloc( 2 * (L_FFT/2+1) * sizeof(double) ); // fftw_malloc for memory alignment 
-	// For zero padding
-	for(uint64_t j=0; j < (L_FFT/2+1) ; j++)
-	{
-		g[j] = 0;
-	}
-	
-	// Prepare plans : r2c and c2r
-	g_plan = fftw_plan_dft_r2c_1d( L_FFT , (double*)g , reinterpret_cast<fftw_complex*>(h) , FFTW_EXHAUSTIVE);
-		//  in-place transform of h.
-		//The c2r transform destroys its input array even for out-of-place transforms
-	h_plan = fftw_plan_dft_c2r_1d( L_FFT, reinterpret_cast<fftw_complex*>(h) , (double*)h , FFTW_EXHAUSTIVE); 
-	
-	// loop on chunks and add the fft result to Out
-	///// The chunks ---->
-	for(uint64_t i=0; i < N_chunks ; i++)
-	//for(uint64_t i=0; i < 1 ; i++)
-	{
-		uint64_t j;
-		// Copie-paste the right part of Data into g
-		for(j=0; j < L_chunk ; j++)
-		{
-			( (double*)g )[j] = ( (double)( Data[i*L_chunk + j] ) );
-		}
-		// execute the transform of g 
-		fftw_execute(g_plan); // h now contains the results of the DFT of g
-		
-		//multiplication de f_HalfC et h
-		for(j=0; j < (L_FFT/2+1) ; j++)
-		{
-			h[j] = f_HalfC[j] * h[j];
-		}
-		
-		fftw_execute(h_plan);  // g now contains the results of the chunk's contribution to the convolution product
-		
-		for(j=0; j < L_FFT ; j++)
-		{
-			Out[i*L_chunk+j] += (OutputType)( ( ( (double*)h )[j] )/L_FFT );
-		}
-	}
-	/////
-	///// The rest ---->
-		if (L_reste != 0)
-		{	
-			uint64_t j;
-			// make sure g only contains zeros
-			for(j=0; j < L_FFT ; j++)
-			{
-				( (double*)g )[j] = 0 ;
-			}
-			// add the rest
-			for(j=0; j < L_reste ; j++)
-			{
-				( (double*)g )[j] = ( (double) Data[N_chunks*L_chunk + j] );
-			}
-			// execute the transform of g 
-			fftw_execute(g_plan); // h now contains the results of the DFT of g
-			// in-place multiplication de f_HalfC et h (aussi half complexe)
-			for(j=0; j < (L_FFT/2+1) ; j++)
-			{
-				h[j] = f_HalfC[j] * h[j];
-			}
-			fftw_execute(h_plan);  // g now contains the results of the chunk's contribution to the convolution product
-		
-			// Select only the part of the ifft that contributes to the full output length
-			for(j = 0 ; j < L_reste + L_kernel - 1 ; j++ ){
-				Out[N_chunks*L_chunk+j] += (OutputType)( ( ( (double*)h )[j] )/L_FFT );
-			}
-			// Out now contains the full length convolution
-		}
-	/////
-	// Saving wisdom for future use
-	fftw_export_wisdom_to_filename("FFTW_Wisdom.dat");
-	
-	// free and cleanup
-	fftw_free(g); 
-	fftw_cleanup(); 
-}
-
-
