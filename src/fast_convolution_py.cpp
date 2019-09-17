@@ -16,6 +16,7 @@ py::class_<Fast_Conv<OutputType, KernelType, DataType, ComplexType>>( m , "Fast_
 	.def_readwrite("Data", &Fast_Conv<OutputType,KernelType, DataType, ComplexType>::np_data) \
 	.def_readwrite("Kernel", &Fast_Conv<OutputType,KernelType, DataType, ComplexType>::np_kernel) \
 	.def("print_all_attributes" , &Fast_Conv<OutputType,KernelType, DataType, ComplexType>::print_all_attributes, "Displays all possibly pertinent attributes (private or public).") \
+	.def("prepare" , &Fast_Conv<OutputType,KernelType, DataType, ComplexType>::prepare, "Must be declared once before excute().")\
 	.def("execute" , &Fast_Conv<OutputType,KernelType, DataType, ComplexType>::execute, "Execute the convolution with declared options and attributes.")\
 	\
 	;

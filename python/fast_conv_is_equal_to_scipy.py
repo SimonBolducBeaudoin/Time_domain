@@ -6,11 +6,12 @@ execfile("headers.py")
 L_kernel = 1<<8;
 L_data= 1<<12;
 L_FFT = 1<<10;
+n_threads = 4;
 
-Convolution_type = 'basic'; # Default value
+Convolution_type = 'fft'; # Default value
 
 ############# Declare Time_Quad objects
-X = Fast_Conv_int16_t_int16_t_int16_t_complex_d( L_kernel, L_data, L_FFT );
+X = Fast_Conv_int16_t_int16_t_int16_t_complex_d( L_kernel, L_data, L_FFT, n_threads );
 
 # Numpy instance of arrays
 data = array(X.data, copy = False);
@@ -29,7 +30,7 @@ Scipy = fftconvolve(kernel,data,mode='full') # shape 9001
 ####
 
 #### Using Time_Quad
-X.Convolution_type = 'basic';
+X.Convolution_type = 'fft';
 X.execute();
 ####
 
