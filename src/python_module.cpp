@@ -7,10 +7,10 @@
 PYBIND11_MODULE(time_domain, m)
 {
 	m.doc() = " Time_domain is a python library that calls subjascent custom C++ classes/functions dedicated to on the fly/fast calculations for time domain experiments.";
-	init_time_quad(m);
-	init_fft_benchmarks(m);
-	init_histograms(m);
-	init_fast_convolution(m);
+	init_TimeQuad(m);
+	init_fft(m);
+	init_Histograms(m);
+	init_FastConvolution(m);
 	init_buffered_array(m);
 }
 

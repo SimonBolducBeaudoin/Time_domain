@@ -1,6 +1,6 @@
 obj/python_module.o: src/python_module.cpp \
  src/../includes/python_module.h \
- src/../includes/../includes/histograms_py.h \
+ src/../includes/../includes/Histograms_py.h \
  src/../includes/../includes/../includes/common.h \
  C:\Anaconda2\Include/pybind11/pybind11.h \
  C:\Anaconda2\Include/pybind11/attr.h \
@@ -50,25 +50,25 @@ obj/python_module.o: src/python_module.cpp \
  C:\Anaconda2\Include/pybind11/complex.h \
  C:\Anaconda2\Include/pybind11/numpy.h \
  src/../includes/../includes/../includes/buffered_array.h \
- src/../includes/../includes/../includes/histogram.h \
+ src/../includes/../includes/../includes/Histogram.h \
  src/../includes/../includes/../includes/../includes/omp_extra.h \
- src/../includes/../includes/../includes/../includes/histogram_int.h \
- src/../includes/../includes/../includes/../includes/histogram_float.h \
- src/../includes/../includes/../includes/histogram2D.h \
- src/../includes/../includes/../includes/../includes/histogram2D_float.h \
- src/../includes/../includes/../includes/../includes/histogram2D_int.h \
- src/../includes/../includes/fft_benchmarks_py.h \
- src/../includes/../includes/../includes/fft_benchmarks.h \
+ src/../includes/../includes/../includes/../includes/Histogram_int.h \
+ src/../includes/../includes/../includes/../includes/Histogram_float.h \
+ src/../includes/../includes/../includes/Histogram2D.h \
+ src/../includes/../includes/../includes/../includes/Histogram2D_float.h \
+ src/../includes/../includes/../includes/../includes/Histogram2D_int.h \
+ src/../includes/../includes/fft_py.h \
+ src/../includes/../includes/../includes/fft.h \
  src/../includes/../includes/../includes/../includes/scoped_timer.h \
- src/../includes/../includes/time_quad_py.h \
- src/../includes/../includes/../includes/time_quad.h \
- src/../includes/../includes/fast_convolution_py.h \
- src/../includes/../includes/../includes/fast_convolution.h \
+ src/../includes/../includes/TimeQuad_py.h \
+ src/../includes/../includes/../includes/TimeQuad.h \
+ src/../includes/../includes/FastConvolution_py.h \
+ src/../includes/../includes/../includes/FastConvolution.h \
  src/../includes/../includes/buffered_array_py.h
 
 src/../includes/python_module.h:
 
-src/../includes/../includes/histograms_py.h:
+src/../includes/../includes/Histograms_py.h:
 
 src/../includes/../includes/../includes/common.h:
 
@@ -228,32 +228,32 @@ C:\Anaconda2\Include/pybind11/numpy.h:
 
 src/../includes/../includes/../includes/buffered_array.h:
 
-src/../includes/../includes/../includes/histogram.h:
+src/../includes/../includes/../includes/Histogram.h:
 
 src/../includes/../includes/../includes/../includes/omp_extra.h:
 
-src/../includes/../includes/../includes/../includes/histogram_int.h:
+src/../includes/../includes/../includes/../includes/Histogram_int.h:
 
-src/../includes/../includes/../includes/../includes/histogram_float.h:
+src/../includes/../includes/../includes/../includes/Histogram_float.h:
 
-src/../includes/../includes/../includes/histogram2D.h:
+src/../includes/../includes/../includes/Histogram2D.h:
 
-src/../includes/../includes/../includes/../includes/histogram2D_float.h:
+src/../includes/../includes/../includes/../includes/Histogram2D_float.h:
 
-src/../includes/../includes/../includes/../includes/histogram2D_int.h:
+src/../includes/../includes/../includes/../includes/Histogram2D_int.h:
 
-src/../includes/../includes/fft_benchmarks_py.h:
+src/../includes/../includes/fft_py.h:
 
-src/../includes/../includes/../includes/fft_benchmarks.h:
+src/../includes/../includes/../includes/fft.h:
 
 src/../includes/../includes/../includes/../includes/scoped_timer.h:
 
-src/../includes/../includes/time_quad_py.h:
+src/../includes/../includes/TimeQuad_py.h:
 
-src/../includes/../includes/../includes/time_quad.h:
+src/../includes/../includes/../includes/TimeQuad.h:
 
-src/../includes/../includes/fast_convolution_py.h:
+src/../includes/../includes/FastConvolution_py.h:
 
-src/../includes/../includes/../includes/fast_convolution.h:
+src/../includes/../includes/../includes/FastConvolution.h:
 
 src/../includes/../includes/buffered_array_py.h:

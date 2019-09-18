@@ -18,16 +18,16 @@ template <class FloatType, class BinType>
 class Histogram_of_floats
 {
 	public : 
-		uint64_t NofBins ;
+		uint64_t nofbins ;
 		int n_threads;
-		std::string Algorithme;
+		std::string algorithme;
 		Buffered_Array<BinType> np_histogram ; 
 		
 		FloatType max;
 		
-		Histogram_of_floats( uint64_t NofBins , FloatType* data , uint64_t L_data , FloatType max , std::string Algorithme , int n_threads ); 
-		Histogram_of_floats( uint64_t NofBins, py::array_t<FloatType> numpy_data , FloatType max , std::string Algorithme , int n_threads );
-		Histogram_of_floats( py::array_t<FloatType> numpy_hist, py::array_t<FloatType> numpy_data , FloatType max , std::string Algorithme , int n_threads );
+		Histogram_of_floats( uint64_t nofbins , FloatType* data , uint64_t L_data , FloatType max , std::string algorithme , int n_threads ); 
+		Histogram_of_floats( uint64_t nofbins, py::array_t<FloatType> numpy_data , FloatType max , std::string algorithme , int n_threads );
+		Histogram_of_floats( py::array_t<FloatType> numpy_hist, py::array_t<FloatType> numpy_data , FloatType max , std::string algorithme , int n_threads );
 		// Destructor
 		~Histogram_of_floats(){ p_historgam = NULL ; data = NULL ; };
 		
@@ -35,7 +35,7 @@ class Histogram_of_floats
 		int get_n_threads(){return n_threads;}
 		void set_n_threads( int n_threads ) ;
 		FloatType get_max(){return max;}
-		void set_max(FloatType max){this->max = max; this->bin_width = 2*max/(this->NofBins);}
+		void set_max(FloatType max){this->max = max; this->bin_width = 2*max/(this->nofbins);}
 	
 	protected :
 		FloatType bin_width;

@@ -1,5 +1,5 @@
-obj/histogram2D.o: src/histogram2D.cpp src/../includes/histogram2D.h \
- src/../includes/../includes/histogram2D_float.h \
+obj/Histogram2D.o: src/Histogram2D.cpp src/../includes/histogram2D.h \
+ src/../includes/../includes/Histogram2D_float.h \
  src/../includes/../includes/../includes/common.h \
  C:\Anaconda2\Include/pybind11/pybind11.h \
  C:\Anaconda2\Include/pybind11/attr.h \
@@ -50,12 +50,12 @@ obj/histogram2D.o: src/histogram2D.cpp src/../includes/histogram2D.h \
  C:\Anaconda2\Include/pybind11/numpy.h \
  src/../includes/../includes/../includes/omp_extra.h \
  src/../includes/../includes/../includes/buffered_array.h \
- src/../includes/../includes/histogram2D_int.h \
+ src/../includes/../includes/Histogram2D_int.h \
  src/../src/histogram2D_float.tpp src/../src/histogram2D_int.tpp
 
 src/../includes/histogram2D.h:
 
-src/../includes/../includes/histogram2D_float.h:
+src/../includes/../includes/Histogram2D_float.h:
 
 src/../includes/../includes/../includes/common.h:
 
@@ -217,7 +217,7 @@ src/../includes/../includes/../includes/omp_extra.h:
 
 src/../includes/../includes/../includes/buffered_array.h:
 
-src/../includes/../includes/histogram2D_int.h:
+src/../includes/../includes/Histogram2D_int.h:
 
 src/../src/histogram2D_float.tpp:
 

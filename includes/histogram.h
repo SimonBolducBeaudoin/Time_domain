@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../includes/omp_extra.h"
-#include "../includes/histogram_int.h"
-#include "../includes/histogram_float.h"
+#include "../includes/Histogram_int.h"
+#include "../includes/Histogram_float.h"
 
 //////////////////////////////////////////////////////////////////////////////////////
 //// With partial specialization all implementation will appears under the same class name "Histogram"
@@ -125,7 +125,7 @@ public :
 	Histogram( DECLARE_INPUTS_PY_1(uint16_t) ): Histogram_of_ints<uint16_t,BinType>( INPUTS_PY_1 ) {}
 	Histogram( DECLARE_INPUTS_PY_2(uint16_t) ): Histogram_of_ints<uint16_t,BinType>( INPUTS_PY_2 ) {}
 	
-	// Computes the histogram for (8<b<=16)-bit samples in uint16 containers
+	// Computes the Histogram for (8<b<=16)-bit samples in uint16 containers
 	int sample_bit_length ;
 	
 	void execute();
@@ -139,7 +139,7 @@ public :
 	Histogram( DECLARE_INPUTS_PY_1(int16_t) ): Histogram_of_ints<int16_t,BinType>( INPUTS_PY_1 ) {}
 	Histogram( DECLARE_INPUTS_PY_2(int16_t) ): Histogram_of_ints<int16_t,BinType>( INPUTS_PY_2 ) {}
 	
-	// Computes the histogram for (8<b<=16)-bit samples in uint16 containers
+	// Computes the Histogram for (8<b<=16)-bit samples in uint16 containers
 	int sample_bit_length ;
 	
 	void execute();

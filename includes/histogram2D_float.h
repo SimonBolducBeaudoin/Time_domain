@@ -18,16 +18,16 @@ template <class FloatType, class BinType>
 class Histogram2D_of_floats
 {
 	public :
-		uint64_t NofBins ;
+		uint64_t nofbins ;
 		uint8_t n_threads;
-		std::string Algorithme;
+		std::string algorithme;
 		Buffered_Array<BinType> np_histogram ; 
 	
 		FloatType max;
 		// Contructor
-		Histogram2D_of_floats( uint64_t NofBins , FloatType* data_1 , FloatType* data_2 , uint64_t L_data , FloatType max , std::string Algorithme , int n_threads ); 
-		Histogram2D_of_floats( uint64_t NofBins, py::array_t<FloatType> numpy_data_1 , py::array_t<FloatType> numpy_data_2 , FloatType max , std::string Algorithme , int n_threads );
-		Histogram2D_of_floats( py::array_t<FloatType> numpy_hist, py::array_t<FloatType> numpy_data_1 , py::array_t<FloatType> numpy_data_2 , FloatType max , std::string Algorithme , int n_threads );
+		Histogram2D_of_floats( uint64_t nofbins , FloatType* data_1 , FloatType* data_2 , uint64_t L_data , FloatType max , std::string algorithme , int n_threads ); 
+		Histogram2D_of_floats( uint64_t nofbins, py::array_t<FloatType> numpy_data_1 , py::array_t<FloatType> numpy_data_2 , FloatType max , std::string algorithme , int n_threads );
+		Histogram2D_of_floats( py::array_t<FloatType> numpy_hist, py::array_t<FloatType> numpy_data_1 , py::array_t<FloatType> numpy_data_2 , FloatType max , std::string algorithme , int n_threads );
 		// Destructor
 		~Histogram2D_of_floats(){ p_historgam = NULL ; data_1 = NULL ; data_2 = NULL ; };
 		
@@ -39,7 +39,7 @@ class Histogram2D_of_floats
 		FloatType* get_data_2(){return data_2;}
 		void set_data_2( FloatType* data_2 ){this->data_2 = data_2;}
 		FloatType get_max(){return max;}
-		void set_max(FloatType max){this->max = max; this->bin_width = 2*max/(this->NofBins);}
+		void set_max(FloatType max){this->max = max; this->bin_width = 2*max/(this->nofbins);}
 		
 	protected :
 		FloatType bin_width;
@@ -53,6 +53,6 @@ class Histogram2D_of_floats
 		static inline void to_hist_middleman( uint8_t* h, BinType* hist, int bin ) ;
 		static inline void to_hist_middleman_pragma( uint8_t* h, BinType* hist, int bin );
 		inline void what_bin( const FloatType* data_1 , const FloatType* data_2, uint16_t* binx, uint16_t* biny) ;
-		inline void basic( const FloatType* data_1 , const FloatType* data_2, uint64_t L_data, int NofBins , BinType* hist ) ;
-		inline void basic_middleman( const FloatType* data_1 , const FloatType* data_2, uint64_t L_data, int NofBins , BinType* hist ) ;
+		inline void basic( const FloatType* data_1 , const FloatType* data_2, uint64_t L_data, int nofbins , BinType* hist ) ;
+		inline void basic_middleman( const FloatType* data_1 , const FloatType* data_2, uint64_t L_data, int nofbins , BinType* hist ) ;
 };

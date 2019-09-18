@@ -1,6 +1,6 @@
 
-#include "../includes/fft_benchmarks.h"
-#include "../src/fft_benchmarks.tpp"
+#include "../includes/fft.h"
+#include "../src/fft.tpp"
 
 //  Note that fft_test.ttp and  fft_test.h will probably need to be modified if 
 // you want to add more type compatibility
@@ -10,8 +10,8 @@
 
 template class Mother_FFT<float,int16_t>;
 template class Mother_FFT<double,int16_t>;
-template class FFT_Benchmarks<float,int16_t>;
-template class FFT_Benchmarks<double,int16_t>;
+template class FFT<float,int16_t>;
+template class FFT<double,int16_t>;
 
 
 

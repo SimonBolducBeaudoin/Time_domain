@@ -18,15 +18,15 @@ template <class IntType, class BinType>
 class Histogram2D_of_ints
 {	
 	public : 
-		uint64_t NofBins ;
+		uint64_t nofbins ;
 		int n_threads;
-		std::string Algorithme;
+		std::string algorithme;
 		Buffered_Array<BinType> np_histogram ; 
 		
 		// Contructor
-		Histogram2D_of_ints( uint64_t NofBins , IntType* data_1 , IntType* data_2 , uint64_t L_data , std::string Algorithme , int n_threads ); 
-		Histogram2D_of_ints( uint64_t NofBins, py::array_t<IntType> numpy_data_1 , py::array_t<IntType> numpy_data_2 , std::string Algorithme , int n_threads );
-		Histogram2D_of_ints( py::array_t<IntType> numpy_hist, py::array_t<IntType> numpy_data_1 , py::array_t<IntType> numpy_data_2 , std::string Algorithme , int n_threads );
+		Histogram2D_of_ints( uint64_t nofbins , IntType* data_1 , IntType* data_2 , uint64_t L_data , std::string algorithme , int n_threads ); 
+		Histogram2D_of_ints( uint64_t nofbins, py::array_t<IntType> numpy_data_1 , py::array_t<IntType> numpy_data_2 , std::string algorithme , int n_threads );
+		Histogram2D_of_ints( py::array_t<IntType> numpy_hist, py::array_t<IntType> numpy_data_1 , py::array_t<IntType> numpy_data_2 , std::string algorithme , int n_threads );
 		// Destructor
 		~Histogram2D_of_ints(){ p_historgam = NULL ; data_1 = NULL ; data_2 = NULL ; };
 		

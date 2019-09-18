@@ -30,7 +30,6 @@ Options_set(Conv_Opt, **Dict_Opt) # This works if the dictornary contains one or
 Options_print(Conv_Opt) # Print the current state of the option structure
 ##
 
-
 data = array(normal(0,1<<12,L), dtype = 'int16');
 
 # Kernel ??

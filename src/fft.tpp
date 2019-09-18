@@ -56,13 +56,13 @@ void Mother_FFT<FloatType,DataType>::set_nthreads( int nthreads )
 
 // Constructors
 template <class DataType>
-FFT_Benchmarks<float,DataType>::FFT_Benchmarks
+FFT<float,DataType>::FFT
 (   uint64_t L_data, uint32_t L_FFT, int nthreads ): Mother_FFT<float,DataType>(L_data,L_FFT,nthreads)
 {	
 	fftwf_import_wisdom_from_filename("FFTWF_Wisdom.dat");
 }
 template <class DataType>
-FFT_Benchmarks<double,DataType>::FFT_Benchmarks
+FFT<double,DataType>::FFT
 (   uint64_t L_data, uint32_t L_FFT, int nthreads ): Mother_FFT<double,DataType>(L_data,L_FFT,nthreads)
 {	
 	fftw_import_wisdom_from_filename("FFTW_Wisdom.dat");
@@ -71,13 +71,13 @@ FFT_Benchmarks<double,DataType>::FFT_Benchmarks
 //////////
 //Destructors
 template <class DataType>
-FFT_Benchmarks<float,DataType>::~FFT_Benchmarks()
+FFT<float,DataType>::~FFT()
 {	  	
 	fftwf_export_wisdom_to_filename("FFTWF_Wisdom.dat");
 	fftwf_cleanup_threads();
 }
 template <class DataType>
-FFT_Benchmarks<double,DataType>::~FFT_Benchmarks()
+FFT<double,DataType>::~FFT()
 {	 	
 	fftw_export_wisdom_to_filename("FFTW_Wisdom.dat");
 	fftw_cleanup_threads();
@@ -85,14 +85,14 @@ FFT_Benchmarks<double,DataType>::~FFT_Benchmarks()
 //////////
 //////////prepare()
 template <class DataType>
-void FFT_Benchmarks<float,DataType>::prepare()
+void FFT<float,DataType>::prepare()
 {
 	Timer Timer( & this->Time_preparation );
 	fftwf_plan_with_nthreads( this->nthreads );
 	plan = fftwf_plan_dft_r2c_1d( this->L_FFT , (float*)this->p_inplace_halfC , reinterpret_cast<fftwf_complex*>(this->p_inplace_halfC), FFTW_EXHAUSTIVE); // in-place fft
 }
 template <class DataType>
-void FFT_Benchmarks<double,DataType>::prepare()
+void FFT<double,DataType>::prepare()
 {
 	Timer Timer(& this->Time_preparation);
 	fftw_plan_with_nthreads(  this->nthreads );
@@ -101,14 +101,14 @@ void FFT_Benchmarks<double,DataType>::prepare()
 //////////
 //////////execute()
 template <class DataType>
-void FFT_Benchmarks<float,DataType>::execute()
+void FFT<float,DataType>::execute()
 {
 	// conditionnals
 	FFT_inplace();
 	//end
 }
 template <class DataType>
-void FFT_Benchmarks<double,DataType>::execute()
+void FFT<double,DataType>::execute()
 {
 	// conditionnals
 	FFT_inplace();
@@ -117,7 +117,7 @@ void FFT_Benchmarks<double,DataType>::execute()
 //////////
 //////////FFT_inplace()
 template <class DataType>
-void FFT_Benchmarks<float,DataType>::FFT_inplace()
+void FFT<float,DataType>::FFT_inplace()
 {
 	Timer Timer(& this->Time_execution);
     for (uint64_t i = 0; i< 10000 ; i++)	
@@ -126,7 +126,7 @@ void FFT_Benchmarks<float,DataType>::FFT_inplace()
     }
 }
 template <class DataType>
-void FFT_Benchmarks<double,DataType>::FFT_inplace()
+void FFT<double,DataType>::FFT_inplace()
 {
 	//Execute
 	// fftw_import_wisdom_from_filename("FFTW_Wisdom.dat");

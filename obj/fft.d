@@ -1,4 +1,4 @@
-obj/time_quad_py.o: src/time_quad_py.cpp src/../includes/TimeQuad_py.h \
+obj/fft.o: src/fft.cpp src/../includes/fft.h \
  src/../includes/../includes/common.h \
  C:\Anaconda2\Include/pybind11/pybind11.h \
  C:\Anaconda2\Include/pybind11/attr.h \
@@ -47,10 +47,10 @@ obj/time_quad_py.o: src/time_quad_py.cpp src/../includes/TimeQuad_py.h \
  C:\Anaconda2\Include/pybind11/detail/init.h \
  C:\Anaconda2\Include/pybind11/complex.h \
  C:\Anaconda2\Include/pybind11/numpy.h \
- src/../includes/../includes/TimeQuad.h \
- src/../includes/../includes/../includes/buffered_array.h
+ src/../includes/../includes/buffered_array.h \
+ src/../includes/../includes/scoped_timer.h src/../src/fft.tpp
 
-src/../includes/TimeQuad_py.h:
+src/../includes/fft.h:
 
 src/../includes/../includes/common.h:
 
@@ -208,6 +208,8 @@ C:\Anaconda2\Include/pybind11/complex.h:
 
 C:\Anaconda2\Include/pybind11/numpy.h:
 
-src/../includes/../includes/TimeQuad.h:
+src/../includes/../includes/buffered_array.h:
 
-src/../includes/../includes/../includes/buffered_array.h:
+src/../includes/../includes/scoped_timer.h:
+
+src/../src/fft.tpp:

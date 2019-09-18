@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../includes/histogram2D_float.h"
-#include "../includes/histogram2D_int.h"
+#include "../includes/Histogram2D_float.h"
+#include "../includes/Histogram2D_int.h"
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Histogram2D primary template

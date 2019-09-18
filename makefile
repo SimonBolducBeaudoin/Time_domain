@@ -30,9 +30,7 @@ HEAD = $(patsubst $(SDIR)/%.cpp,$(IDIR)/%.h,$(SRC))
 CC = $(OS:Windows_NT=x86_64-w64-mingw32-)g++
 
 # flags
-#CFLAGS = -Ofast -march=native -std=c++14 -Wall $(OS:Windows_NT=-DMS_WIN64 -D_hypot=hypot) -I$(IDIR)
-# for debuging
-CFLAGS = -DDEBUG -Ofast -march=native -std=c++14 -MMD -MP -Wall $(OS:Windows_NT=-DMS_WIN64 -D_hypot=hypot) -I$(IDIR)
+CFLAGS = -Ofast -march=native -std=c++14 -MMD -MP -Wall $(OS:Windows_NT=-DMS_WIN64 -D_hypot=hypot) -I$(IDIR)
 
 OMPFLAGS = -fopenmp -fopenmp-simd
 FFTWFLAGS = -lfftw3_omp -lfftw3 -lfftw3f_omp -lfftw3f -lm 

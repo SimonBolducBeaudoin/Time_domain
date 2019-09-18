@@ -17,14 +17,14 @@ template <class IntType, class BinType>
 class Histogram_of_ints 
 {
 	public :
-		uint64_t NofBins ;
+		uint64_t nofbins ;
 		int n_threads;
-		std::string Algorithme;
+		std::string algorithme;
 		Buffered_Array<BinType> np_histogram ;
 		
-		Histogram_of_ints( uint64_t NofBins , IntType* data , uint64_t L_data, std::string Algorithme , int n_threads ); 
-		Histogram_of_ints( uint64_t NofBins, py::array_t<IntType> numpy_data , std::string Algorithme , int n_threads );
-		Histogram_of_ints( py::array_t<IntType> numpy_hist, py::array_t<IntType> numpy_data , std::string Algorithme , int n_threads );
+		Histogram_of_ints( uint64_t nofbins , IntType* data , uint64_t L_data, std::string algorithme , int n_threads ); 
+		Histogram_of_ints( uint64_t nofbins, py::array_t<IntType> numpy_data , std::string algorithme , int n_threads );
+		Histogram_of_ints( py::array_t<IntType> numpy_hist, py::array_t<IntType> numpy_data , std::string algorithme , int n_threads );
 		// Destructor
 		~Histogram_of_ints(){ p_historgam = NULL ; data = NULL ; };
 		

@@ -1,4 +1,4 @@
-obj/histogram.o: src/histogram.cpp src/../includes/histogram.h \
+obj/Histogram.o: src/Histogram.cpp src/../includes/histogram.h \
  src/../includes/../includes/omp_extra.h \
  src/../includes/../includes/../includes/common.h \
  C:\Anaconda2\Include/pybind11/pybind11.h \
@@ -48,9 +48,9 @@ obj/histogram.o: src/histogram.cpp src/../includes/histogram.h \
  C:\Anaconda2\Include/pybind11/detail/init.h \
  C:\Anaconda2\Include/pybind11/complex.h \
  C:\Anaconda2\Include/pybind11/numpy.h \
- src/../includes/../includes/histogram_int.h \
+ src/../includes/../includes/Histogram_int.h \
  src/../includes/../includes/../includes/buffered_array.h \
- src/../includes/../includes/histogram_float.h \
+ src/../includes/../includes/Histogram_float.h \
  src/../src/histogram_int.tpp src/../src/histogram_float.tpp
 
 src/../includes/histogram.h:
@@ -213,11 +213,11 @@ C:\Anaconda2\Include/pybind11/complex.h:
 
 C:\Anaconda2\Include/pybind11/numpy.h:
 
-src/../includes/../includes/histogram_int.h:
+src/../includes/../includes/Histogram_int.h:
 
 src/../includes/../includes/../includes/buffered_array.h:
 
-src/../includes/../includes/histogram_float.h:
+src/../includes/../includes/Histogram_float.h:
 
 src/../src/histogram_int.tpp:
 

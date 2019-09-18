@@ -1,4 +1,4 @@
-obj/histograms_py.o: src/histograms_py.cpp \
+obj/Histograms_py.o: src/Histograms_py.cpp \
  src/../includes/histograms_py.h src/../includes/../includes/common.h \
  C:\Anaconda2\Include/pybind11/pybind11.h \
  C:\Anaconda2\Include/pybind11/attr.h \
@@ -48,13 +48,13 @@ obj/histograms_py.o: src/histograms_py.cpp \
  C:\Anaconda2\Include/pybind11/complex.h \
  C:\Anaconda2\Include/pybind11/numpy.h \
  src/../includes/../includes/buffered_array.h \
- src/../includes/../includes/histogram.h \
+ src/../includes/../includes/Histogram.h \
  src/../includes/../includes/../includes/omp_extra.h \
- src/../includes/../includes/../includes/histogram_int.h \
- src/../includes/../includes/../includes/histogram_float.h \
- src/../includes/../includes/histogram2D.h \
- src/../includes/../includes/../includes/histogram2D_float.h \
- src/../includes/../includes/../includes/histogram2D_int.h
+ src/../includes/../includes/../includes/Histogram_int.h \
+ src/../includes/../includes/../includes/Histogram_float.h \
+ src/../includes/../includes/Histogram2D.h \
+ src/../includes/../includes/../includes/Histogram2D_float.h \
+ src/../includes/../includes/../includes/Histogram2D_int.h
 
 src/../includes/histograms_py.h:
 
@@ -216,16 +216,16 @@ C:\Anaconda2\Include/pybind11/numpy.h:
 
 src/../includes/../includes/buffered_array.h:
 
-src/../includes/../includes/histogram.h:
+src/../includes/../includes/Histogram.h:
 
 src/../includes/../includes/../includes/omp_extra.h:
 
-src/../includes/../includes/../includes/histogram_int.h:
+src/../includes/../includes/../includes/Histogram_int.h:
 
-src/../includes/../includes/../includes/histogram_float.h:
+src/../includes/../includes/../includes/Histogram_float.h:
 
-src/../includes/../includes/histogram2D.h:
+src/../includes/../includes/Histogram2D.h:
 
-src/../includes/../includes/../includes/histogram2D_float.h:
+src/../includes/../includes/../includes/Histogram2D_float.h:
 
-src/../includes/../includes/../includes/histogram2D_int.h:
+src/../includes/../includes/../includes/Histogram2D_int.h:

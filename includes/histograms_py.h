@@ -2,7 +2,7 @@
 
 #include "../includes/common.h"
 #include "../includes/buffered_array.h"
-#include "../includes/histogram.h"
-#include "../includes/histogram2D.h"
+#include "../includes/Histogram.h"
+#include "../includes/Histogram2D.h"
 
-void init_histograms(py::module &m);
+void init_Histograms(py::module &m);

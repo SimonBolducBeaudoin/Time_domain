@@ -49,13 +49,13 @@ class Mother_FFT
 // primary template
 // see : https://en.cppreference.com/w/cpp/language/partial_specialization
 template <class FloatType, class DataType>
-class FFT_Benchmarks 
+class FFT 
 {
 };
 
 // partial specialization #1
 template <class DataType>
-class FFT_Benchmarks<float,DataType> : public Mother_FFT<float,DataType>
+class FFT<float,DataType> : public Mother_FFT<float,DataType>
 {
 	// This class is meant to benchmark different implementation of the FFT using fftw
 	public : 
@@ -63,9 +63,9 @@ class FFT_Benchmarks<float,DataType> : public Mother_FFT<float,DataType>
 		fftwf_plan plan;
         
         // Contructor
-		FFT_Benchmarks(uint64_t L_data = 1, uint32_t L_FTT = 1, int nthreads = 1 );
+		FFT(uint64_t L_data = 1, uint32_t L_FTT = 1, int nthreads = 1 );
 		// Destructor
-		~FFT_Benchmarks();
+		~FFT();
         
         void prepare();
         void execute();
@@ -78,7 +78,7 @@ class FFT_Benchmarks<float,DataType> : public Mother_FFT<float,DataType>
 };
 // partial specialization #2
 template <class DataType>
-class FFT_Benchmarks<double,DataType> : public Mother_FFT<double,DataType>
+class FFT<double,DataType> : public Mother_FFT<double,DataType>
 {
 	// This class is meant to benchmark different implementation of the FFT using fftw
 	public : 
@@ -86,9 +86,9 @@ class FFT_Benchmarks<double,DataType> : public Mother_FFT<double,DataType>
 		fftw_plan plan;
         
         // Contructor
-		FFT_Benchmarks(uint64_t L_data = 1, uint32_t L_FTT = 1 , int nthreads = 1 );
+		FFT(uint64_t L_data = 1, uint32_t L_FTT = 1 , int nthreads = 1 );
 		// Destructor
-		~FFT_Benchmarks();
+		~FFT();
         
         void prepare();
         void execute();

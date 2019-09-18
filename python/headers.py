@@ -2,7 +2,7 @@
 import sys
 sys.path.insert(0, 'C:/Users/simon/Desktop/CODES/Time_domain')# pc simon-i5_5200U
 #sys.path.insert(0, 'C:/Users/Sous-sol/Desktop/CODES/Time_quadratures-OTF')# pc simon-Ryzen-1600X
-#sys.path.insert(0, 'C:\Projets\TimeQuad\Time_quadratures-OTF')
+sys.path.insert(0, 'C:/Projets/Time_Domain_Optic/Time_Domain')
 import add_mingw_to_PATH
 
 # plot stuff
