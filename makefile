@@ -23,7 +23,7 @@ endif
 # Lits of .c and corresponding .o and .h
 SRC  = $(wildcard $(SDIR)/*.cpp)
 OBJ  = $(patsubst $(SDIR)/%.cpp,$(ODIR)/%.o,$(SRC))
-DEPS = $(OBJS:.o=.d)
+DEPS = $(OBJ:.o=.d)
 HEAD = $(patsubst $(SDIR)/%.cpp,$(IDIR)/%.h,$(SRC))
 
 # Toolchain, using mingw on windows
