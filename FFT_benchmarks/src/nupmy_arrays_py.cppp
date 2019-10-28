@@ -1,0 +1,24 @@
+#include "../includes/numpy_arrays_py.h"
+
+#define PY_NUMPY_VECTOR(DataType)\
+	py::class_<Numpy_Vector<DataType>>( m , "Numpy_Vector_"#DataType, py::buffer_protocol())\
+		.def_buffer([](Numpy_Vector<DataType> &instance) -> py::buffer_info\
+        {\
+			return py::buffer_info(\
+				instance.get_BufferData(), sizeof(DataType),\
+				py::format_descriptor<DataType>::format(), 1 , {instance.get_BufferDimension()}, {sizeof(DataType)}\
+			);\
+		})\
+		;
+		
+void init_numpy_arrays(py::module &m)
+{
+	PY_NUMPY_VECTOR(int16_t);
+	PY_NUMPY_VECTOR(float);
+	PY_NUMPY_VECTOR(double);
+	PY_NUMPY_VECTOR(complex_f); 
+	PY_NUMPY_VECTOR(complex_d);
+}
+
+// CLOSE MACRO SCOPES
+#undef PY_NUMPY_VECTOR
