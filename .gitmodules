@@ -4,9 +4,3 @@
 [submodule "Histograms-OTF"]
 	path = Histograms-OTF
 	url = https://github.com/SimonBolducBeaudoin/Histograms-OTF.git
-[submodule "aCorrs-OTF"]
-	path = aCorrs-OTF
-	url = https://github.com/JeanOlivier/aCorrs-OTF.git
-[submodule "remdet-OTF"]
-	path = remdet-OTF
-	url = https://github.com/JeanOlivier/remdet-OTF.git
