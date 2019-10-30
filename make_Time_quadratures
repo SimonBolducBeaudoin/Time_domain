@@ -18,7 +18,10 @@ Fast_convolution = SM-Fast_convolution
 
 # All the external objects that the current submodule depends on
 # Those objects have to be up to date
-EXTERNAL_OBJ = $(wildcard SM-Buffered_arrays/obj/*.o) $($(wildcard SM-Scoped_timer/obj/*.o)) $($(wildcard SM-Omp_extra/obj/*.o))
+tempo1 = $(wildcard SM-Buffered_arrays/obj/*.o)
+tempo2 = $(wildcard SM-Scoped_timer/obj/*.o)
+tempo3 = $(wildcard SM-Omp_extra/obj/*.o)
+EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3)
 
 # The current submodule directorie
 SUBMOD_DIR = $(Time_quadratures)
