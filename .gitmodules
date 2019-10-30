@@ -1,6 +1,3 @@
-[submodule "Time_quadratures-OTF"]
-	path = Time_quadratures-OTF
-	url = https://github.com/SimonBolducBeaudoin/Time_quadratures-OTF.git
 [submodule "Histograms-OTF"]
 	path = Histograms-OTF
 	url = https://github.com/SimonBolducBeaudoin/Histograms-OTF.git
