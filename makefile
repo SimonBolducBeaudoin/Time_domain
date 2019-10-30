@@ -6,7 +6,6 @@
 # in histograms.dll/.so 
 
 # subdirectories
-#SDIR = src
 IDIR = includes
 ODIR = obj
 LDIR = lib
