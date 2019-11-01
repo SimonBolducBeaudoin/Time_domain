@@ -2,8 +2,8 @@
 
 #include "../../includes/header_common.h"
 #include "../SM-Buffered_arrays/includes/buffered_arrays.h"
-
-# include "../../SM-Scoped_timer/includes/scoped_timer.h"
+#include "../../SM-Scoped_timer/includes/scoped_timer.h"
+#include "../../SM-Omp_extra/includes/omp_extra.h"
 
 template <class OutputType, class KernelType, class DataType, class ComplexType>
 class Mother_FastConvolution
@@ -18,9 +18,7 @@ class Mother_FastConvolution
 		uint32_t L_FFT;// Lenght(/number of elements) of the FFT used for FFT convolution
 		std::string Convolution_type; // direct or FFT
 		int n_threads ;
-        // uint64_t Time_alloc;
-        // uint64_t Time_preparation;
-		// uint64_t Time_execution;
+		uint64_t Time_execution;
 		
 		Buffered_Vector<DataType> np_data ; 
 		Buffered_Vector<KernelType> np_kernel; 
@@ -40,10 +38,6 @@ class Mother_FastConvolution
 		// Set and get for L_FFT
 		uint64_t get_L_FFT(){return L_FFT;}
 		int get_n_threads(){return n_threads;}
-        // For now threads are managed by FFTW's parrallel functionnalities
-        // omp_set_num_threads(n_threads);
-		
-		// void print_all_attributes();
 			
 	protected :
 		uint64_t L_kernel; // Lenght(/number of elements) of the first input
@@ -77,52 +71,58 @@ template <class OutputType, class KernelType, class DataType>
 class FastConvolution<OutputType,KernelType,DataType,complex_f>: public Mother_FastConvolution<OutputType,KernelType,DataType,complex_f>
 {
 	public :
-		int FFTWF_init_threads = fftwf_init_threads();
 		fftwf_plan plan;
-		
-		// Contructor
+        // Contructor
 		FastConvolution(uint64_t L_kernel , uint64_t L_data, uint32_t L_FFT , std::string Convolution_type , int n_threads);
-		~FastConvolution();
-		
+		// Destructor
+        ~FastConvolution();
+        
         void set_L_FFT( uint32_t L_FFT );
+        void set_n_threads( int n_threads );
 		void execute();
 	private:
 		// kernel FFT
 		complex_f* kernel_complex;
 		// Data FFT
-		complex_f* g;
-		// Returning to direct space
-		complex_f* h;
+        complex_f** gs ; 
+        complex_f** hs ;
 		
 		fftwf_plan kernel_plan;
 		fftwf_plan g_plan;
 		fftwf_plan h_plan;
         
+        void free_daughter();
+        void prepare_heap();
+        void prepare_plans();
 }; 
 
 template <class OutputType, class KernelType, class DataType>
 class FastConvolution<OutputType,KernelType,DataType,complex_d>: public Mother_FastConvolution<OutputType,KernelType,DataType,complex_d>
 {
 	public :
-		int FFTW_init_threads = fftw_init_threads();
 		fftw_plan plan;
+        // Contructor
 		FastConvolution(uint64_t L_kernel , uint64_t L_data, uint32_t L_FFT , std::string Convolution_type , int n_threads);
-		~FastConvolution();
+		// Destructor
+        ~FastConvolution();
         
         void set_L_FFT( uint32_t L_FFT );
+        void set_n_threads( int n_threads );
 		void execute();
 	private:
 		// kernel FFT
 		complex_d* kernel_complex;
 		// Data FFT
-		complex_d* g;
-		// Returning to direct space
-		complex_d* h;
+        complex_d** gs ; 
+        complex_d** hs ;
 		
 		fftw_plan kernel_plan;
 		fftw_plan g_plan;
 		fftw_plan h_plan;
         
+        void free_daughter();
+        void prepare_heap();
+        void prepare_plans();
 }; 
 
 

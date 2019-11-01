@@ -1,7 +1,6 @@
-SM-Buffered_arrays/obj/buffered_arrays_py.o: \
- SM-Buffered_arrays/src/buffered_arrays_py.cpp \
- SM-Buffered_arrays/src/../includes/buffered_arrays_py.h \
- SM-Buffered_arrays/src/../includes/../../includes/header_common.h \
+SM-Omp_extra/obj/omp_extra.o: SM-Omp_extra/src/omp_extra.cpp \
+ SM-Omp_extra/src/../includes/omp_extra.h \
+ SM-Omp_extra/src/../includes/../../includes/header_common.h \
  C:\Anaconda2\Include/pybind11/pybind11.h \
  C:\Anaconda2\Include/pybind11/attr.h \
  C:\Anaconda2\Include/pybind11/cast.h \
@@ -48,12 +47,11 @@ SM-Buffered_arrays/obj/buffered_arrays_py.o: \
  C:\Anaconda2\Include/pybind11/detail/class.h \
  C:\Anaconda2\Include/pybind11/detail/init.h \
  C:\Anaconda2\Include/pybind11/complex.h \
- C:\Anaconda2\Include/pybind11/numpy.h \
- SM-Buffered_arrays/src/../includes/../includes/buffered_arrays.h
+ C:\Anaconda2\Include/pybind11/numpy.h
 
-SM-Buffered_arrays/src/../includes/buffered_arrays_py.h:
+SM-Omp_extra/src/../includes/omp_extra.h:
 
-SM-Buffered_arrays/src/../includes/../../includes/header_common.h:
+SM-Omp_extra/src/../includes/../../includes/header_common.h:
 
 C:\Anaconda2\Include/pybind11/pybind11.h:
 
@@ -208,5 +206,3 @@ C:\Anaconda2\Include/pybind11/detail/init.h:
 C:\Anaconda2\Include/pybind11/complex.h:
 
 C:\Anaconda2\Include/pybind11/numpy.h:
-
-SM-Buffered_arrays/src/../includes/../includes/buffered_arrays.h:

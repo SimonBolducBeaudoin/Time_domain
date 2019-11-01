@@ -9,26 +9,22 @@ py::class_<FastConvolution<OutputType, KernelType, DataType, ComplexType>>( m , 
 	.def("get_l_kernel", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::get_L_kernel)\
 	.def("get_l_data", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::get_L_data)\
 	.def_property("l_fft", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::get_L_FFT, &FastConvolution<OutputType,KernelType, DataType, ComplexType>::set_L_FFT) \
-	/*.def_property("n_threads", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::get_n_threads, &FastConvolution<OutputType,KernelType, DataType, ComplexType>::set_n_threads)*/\
+	.def_property("n_threads", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::get_n_threads, &FastConvolution<OutputType,KernelType, DataType, ComplexType>::set_n_threads) \
 	.def_readwrite("convolution_type", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::Convolution_type) \
     .def_readwrite("data", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::np_data) \
     .def_readwrite("kernel", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::np_kernel) \
 	.def_readwrite("output_full", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::np_output) \
-	/*.def("print_all_attributes" , &FastConvolution<OutputType,KernelType, DataType, ComplexType>::print_all_attributes, "Displays all possibly pertinent attributes (private or public).")*/ \
-	/*.def("prepare" , &FastConvolution<OutputType,KernelType, DataType, ComplexType>::prepare, "Must be declared once before excute().")*/\
 	.def("execute" , &FastConvolution<OutputType,KernelType, DataType, ComplexType>::execute, "Execute the convolution with declared options and attributes.")\
-    /*.def_readwrite("time_allocation", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::Time_alloc)*/\
-    /*.def_readwrite("time_execution", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::Time_execution)*/\
-    /*.def_readwrite("time_preparation", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::Time_preparation)*/\
+    .def_readwrite("time_execution", &FastConvolution<OutputType,KernelType, DataType, ComplexType>::Time_execution)\
 	\
 	;
 
 void init_FastConvolution(py::module &m)
 {
 	PY_FAST_CONVOLUTION(int16_t,int16_t,int16_t,complex_f);
-	// PY_FAST_CONVOLUTION(int16_t,int16_t,int16_t,complex_d);
-	// PY_FAST_CONVOLUTION(float,float,int16_t,complex_f);
-	// PY_FAST_CONVOLUTION(double,double,int16_t,complex_d);
+	PY_FAST_CONVOLUTION(int16_t,int16_t,int16_t,complex_d);
+	PY_FAST_CONVOLUTION(float,float,int16_t,complex_f);
+	PY_FAST_CONVOLUTION(double,double,int16_t,complex_d);
 }
 
 // CLOSE MACRO SCOPES

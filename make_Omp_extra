@@ -24,9 +24,9 @@ tempo3 = $(wildcard SM-Omp_extra/obj/*.o)
 EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3)
 
 # The current submodule directorie
-SUBMOD_DIR = $(FFT_benchmark)
+SUBMOD_DIR = $(OMP_EXTRA)
 
-TARGET_NAME = fft_benchmark
+TARGET_NAME =  Omp_extra
 TARGET_EXT = $(if $(filter $(OS),Windows_NT),.pyd,.so)
 TARGET = $(SUBMOD_DIR)/$(TARGET_NAME)$(TARGET_EXT)
 
@@ -49,7 +49,7 @@ CC = $(OS:Windows_NT=x86_64-w64-mingw32-)g++
 # flags
 CFLAGS = -Ofast -march=native -std=c++14 -MMD -MP -Wall $(OS:Windows_NT=-DMS_WIN64 -D_hypot=hypot) -I$(IDIR)
 OMPFLAGS = -fopenmp -fopenmp-simd
-FFTWFLAGS = -lfftw3 -lfftw3f -lm
+FFTWFLAGS = -lfftw3 -lfftw3f -lm 
 SHRFLAGS = -fPIC -shared
 
 # Python directories
@@ -78,8 +78,9 @@ endif
 
 $(TARGET): $(OBJ)
 	@ echo " "
-	@ echo "---------Compile library $(TARGET)---------"
-	$(CC) $(SHRFLAGS) -o $(TARGET) $(OBJ) $(EXTERNAL_OBJ) $(CFLAGS) $(OMPFLAGS) $(FFTWFLAGS) $(LDLIBS)
+	@ echo "---------No .pyd generated ---------"
+# @ echo "---------Compile library $(TARGET)---------"
+# $(CC) $(SHRFLAGS) -o $(TARGET) $(OBJ) $(EXTERNAL_OBJ) $(CFLAGS) $(OMPFLAGS) $(FFTWFLAGS) $(LDLIBS)
 	
 $(SUBMOD_DIR)/$(ODIR)/%.o : $(SUBMOD_DIR)/$(SDIR)/%.cpp
 	@ echo " "

@@ -1,54 +1,47 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
 
-execfile("headers.py")
+execfile("common_header.py")
 
-L_kernel = 1<<8;
-L_data= 1<<20;
-L_FFT = 1<<10;
+# 2019-10-31 Benchmarks doesn't output the result properly into inplace_halfC
+# didn't bother to fix it now.
 
-dt = 0.03125; # [ns]; # Default value
-Convolution_type = 'fft'; # Default value
+# Dont forget to drop your library.pyd in the current folder
+from fft_benchmark import *
+l_data= 1<<8;
+l_fft = 1<<8;
 
-############# Declare Time_Quad objects
-X = Time_Quad_double_int16_t( L_kernel, L_data, L_FFT);
+mu = 0 ; 
+sigma = 2**12 ;
+n_threads = 1 ; 
 
 # Numpy instance of arrays
+X = FFT_double_int16_t(l_data , l_fft, n_threads );
 data = array(X.data, copy = False);
-
-kernel_p = array(X.kernel_p, copy = False);
-kernel_q = array(X.kernel_q, copy = False);
-
-p_full = array(X.p_full, copy = False);
-p_valid = array(X.p_valid, copy = False);
-
-q_full = array(X.q_full, copy = False);
-q_valid = array(X.q_valid, copy = False);
+inplace_halfC = array(X.inplace_halfC, copy = False);
+data[:] = normal(mu,sigma, l_data);
 #############
 
-# Generate random data
-mu=0
-sigma=2**12
-data[:]  = int16( normal(mu,sigma,L_data) );
-
-#### Using scipy and python library
-(NoyauP,NoyauQ) = Kernels_time(L_kernel, dt)   # [ns^-1/2]
-P_i_scipy = fftconvolve(NoyauP,data,mode='full') # shape 9001
-Q_i_scipy = fftconvolve(NoyauQ,data,mode='full')
+#### Using numpy
+fft_numpy = rfft(data);
 ####
 
-#### Using Time_Quad
-X.Convolution_type = 'fft';
+#### Using C++ 
 X.execute();
 ####
 
+Answer_1 = array_equal( fft_numpy , inplace_halfC );
+# Answer_2 = allclose( fft_numpy , inplace_halfC , atol = 1e0 ) ;
+
+print "Are equal = {} ".format( Answer_1  );
+
 #### Diplay results
 
-fig, axs = subplots(3,1)
-SLICE = slice( None, None, None );
-axs[0].plot(P_i_scipy[SLICE])#;axs[0,1].plot(Q_i_scipy);
-axs[1].plot(p_full[SLICE])#;axs[1,1].plot(q_full);
-axs[2].plot( (P_i_scipy[SLICE]-p_full[SLICE]) )
+# fig, axs = subplots(3,1)
+# SLICE = slice( None, None, None );
+# axs[0].plot(P_i_scipy[SLICE])#;axs[0,1].plot(Q_i_scipy);
+# axs[1].plot(p_full[SLICE])#;axs[1,1].plot(q_full);
+# axs[2].plot( (P_i_scipy[SLICE]-p_full[SLICE]) )
 #axs[1,0].hist(P_i_scipy,100);axs[1,1].hist(Q_i_scipy,100);
 
 ####

@@ -1,7 +1,10 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
 
-execfile("headers.py")
+execfile("common_header.py")
+
+# Dont forget to drop your library.pyd in the current folder
+from fft_benchmark import *
 
 # Instantification de X
 l_data= 1<<16;
