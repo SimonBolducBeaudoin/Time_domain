@@ -26,9 +26,9 @@ EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3)
 # The current submodule directorie
 SUBMOD_DIR = $(Time_quadratures)
 
-TARGET_NAME = Time_quadrature
+TARGET_NAME = Time_quadratures
 TARGET_EXT = $(if $(filter $(OS),Windows_NT),.pyd,.so)
-TARGET = $(SUBMOD_DIR)/$(TARGET_NAME)$(TARGET_EXT)
+TARGET = PY-Test/$(TARGET_NAME)$(TARGET_EXT)
 
 
 # standard subdirectories

@@ -1,8 +1,91 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
+execfile("common_header.py")
 
-# Fichier temporaire contenant les fonction pour QetPdeT/Accumul_Histo
-from matplotlib.pyplot import plot, xlabel, ylabel, axis, hist, figure, axis, subplots, xlim, ylim
+def NoisySinGauss ( A = 1<<14 , f = 0.798132459087 , dt = 0.03125 , number_of_cycle_width =  10  , SNR = 10 ):
+    # n : number of points of the output vector
+    # A : Amplitude
+    # f : [GHz]
+    # dt : time step [ns] 
+    # sigma_t : enveloppe width (std dev) on time axis
+    # sigma_y : gaussian noise width (std dev)
+    
+    # check that n is odd
+    sigma_t = number_of_cycle_width/f ; 
+    n = int ( 10*sigma_t/dt ) ;
+    if n//2 != 1 :
+        n += 1 ;
+        
+    t = float64 ( (arange(n)-n//2)*dt ) ;
+    
+    Prefactor = 1 / (sigma_t * sqrt(2*pi) ) ;
+     
+    Enveloppe = Prefactor*exp( (-t**2)/(2*sigma_t**2) ) ;
+    
+    omega = 2*pi*f;
+    
+    return  A*Enveloppe*( sin(omega*t) + normal(0, 1/float(SNR),n) ) , t ; 
+
+def WhiteNoise(A = 1<<14 , duree = 1000 , dt = 0.03125 ):
+    # n : number of points of  the output vector
+    # A : Amplitude
+    
+    n = int ( duree//dt ) ;
+    t = float64 ( (arange(n)-n//2)*dt ) ;
+    
+    return  normal(0, A , n)  , t ; 
+
+def SquareFunction(x,delta_x):
+    answer = zeros(x.size);
+    for  i , point in enumerate(x):
+        if absolute(point) <= delta_x : answer[i] = 1/delta_x
+    return answer  
+    
+def NoisySinSquare ( A = 1<<14 , f = sqrt(2) , dt = 0.03125 , number_of_cycle_width =  10  , SNR = 100 ):
+    # n : number of points of the output vector
+    # A : Amplitude
+    # f : [GHz]
+    # dt : time step [ns] 
+    # sigma_t : enveloppe width (std dev) on time axis
+    # sigma_y : gaussian noise width (std dev)
+    
+    # check that n is odd
+    delta_t = number_of_cycle_width/f ; 
+    n = int ( 4*delta_t/dt ) ;
+    if n//2 != 1 :
+        n += 1 ;
+        
+    t = float64 ( (arange(n)-n//2)*dt ) ;
+     
+    Enveloppe = SquareFunction(t, delta_t) ;
+    
+    omega = 2*pi*f;
+    
+    return  A*Enveloppe*( sin(omega*t) + normal(0, 1/float(SNR),n) ) , t ; 
+    
+def Kernels_impaires( l_kernel = 257 , dt = 0.3125 ) :
+    # Returns the time kernel of p(t) and q(t)
+    # Kernel de p(t) => 1/sqrt(|t|) 
+    # Kernel de q(t) => sgn(t)/sqrt(|t|)
+    
+    f_min = 1/(l_kernel*dt);
+    
+    t_plus = dt*( arange(l_kernel//2) + 1 ) ;
+    # positive_q = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )[0] - fresnel( sqrt( 4 * t_plus * f_min ) )[0] );
+    # positive_p = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )[1] - fresnel( sqrt( 4 * t_plus * f_min ) )[1] );
+    positive_q = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )[0]  );
+    positive_p = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )[1]  );
+    
+    kernel_p = concatenate( (positive_p[::-1] , [2.0*sqrt(2.0)/sqrt(dt)] , positive_p ) ) ;
+    kernel_q = concatenate( ( (-1)*positive_q[::-1] , [0] , positive_q )) ;
+
+    # half_abscisse = dt*( arange(l_kernel//2) + 1 ) ;
+    # half_kernel  = 1/sqrt( absolute( half_abscisse ) ) ;
+
+    # kernel_p = concatenate( (half_kernel[::-1] , [2.0*sqrt(2.0)/sqrt(dt)]  , half_kernel ) ) ;
+    # kernel_q = concatenate( ((-1)*half_kernel[::-1] , [0] , half_kernel ) ) ;
+
+    return kernel_p, kernel_q
 
 # Juste pour emballer les variables dans la fonction
 def Beta_t(Df  = 0.005e9,N =  2**12,Fmin = 0.5e9,Fmax = 10e9) :
@@ -143,3 +226,16 @@ def FFTConv(V_i, N, N_FFT, dt):
     #Q_i = delete(Q_i,Fin)
     
     return P_i, Q_i
+
+# Finds the indexes of the K largest element of X 
+def KBestOfX3D(X,K):
+    import heapq
+    Shape = X.shape;
+    Deroule = X.ravel() ;
+    Taille = X.size ; 
+    Index =  array( heapq.nlargest( K , range(Taille) , Deroule.__getitem__ ) ) ;
+    index_i = Index//(Shape[1]*Shape[2]);
+    index_j = (Index - (Shape[1]*Shape[2])*index_i)//(Shape[2]);
+    index_k = Index - (Shape[1]*Shape[2])*index_i - (Shape[2])*index_j ;
+    
+    return (index_i , index_j , index_k)

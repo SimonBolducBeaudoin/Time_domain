@@ -15,9 +15,8 @@ class Mother_FastConvolution
 // Parameters at contructions/instanciation
 	// I used mane private/public sections to ensure that attributes are declared in the same order as in the constructor function. (ifnot we get a warning)
 	public : 
-		uint32_t L_FFT;// Lenght(/number of elements) of the FFT used for FFT convolution
 		std::string Convolution_type; // direct or FFT
-		int n_threads ;
+        
 		uint64_t Time_execution;
 		
 		Buffered_Vector<DataType> np_data ; 
@@ -27,7 +26,9 @@ class Mother_FastConvolution
 		// Buffered_Vector<OutputType> np_output_valid ;
 		
 		// Contructor
-		Mother_FastConvolution(uint64_t L_kernel = 2,uint64_t L_data = 16, uint32_t L_FFT = 8, std::string Convolution_type = "fft", int n_threads = 4);
+		Mother_FastConvolution( uint64_t L_kernel ,uint64_t L_data , 
+                                uint32_t L_FFT , std::string Convolution_type ,
+                                int n_threads );
 		// Destructor
 		~Mother_FastConvolution();
 		
@@ -40,6 +41,8 @@ class Mother_FastConvolution
 		int get_n_threads(){return n_threads;}
 			
 	protected :
+        uint32_t L_FFT;// Lenght(/number of elements) of the FFT used for FFT convolution
+        int n_threads ;
 		uint64_t L_kernel; // Lenght(/number of elements) of the first input
 		uint64_t L_data; // Lenght(/number of elements) of the sedond input
 		// Deduced from the inputs of the constructor
@@ -71,9 +74,10 @@ template <class OutputType, class KernelType, class DataType>
 class FastConvolution<OutputType,KernelType,DataType,complex_f>: public Mother_FastConvolution<OutputType,KernelType,DataType,complex_f>
 {
 	public :
-		fftwf_plan plan;
         // Contructor
-		FastConvolution(uint64_t L_kernel , uint64_t L_data, uint32_t L_FFT , std::string Convolution_type , int n_threads);
+		FastConvolution( uint64_t L_kernel = 1<<8 ,uint64_t L_data =1<<26 , 
+                                uint32_t L_FFT =1<<10 , std::string Convolution_type = "fft",
+                                int n_threads = 70);
 		// Destructor
         ~FastConvolution();
         
@@ -100,7 +104,6 @@ template <class OutputType, class KernelType, class DataType>
 class FastConvolution<OutputType,KernelType,DataType,complex_d>: public Mother_FastConvolution<OutputType,KernelType,DataType,complex_d>
 {
 	public :
-		fftw_plan plan;
         // Contructor
 		FastConvolution(uint64_t L_kernel , uint64_t L_data, uint32_t L_FFT , std::string Convolution_type , int n_threads);
 		// Destructor
@@ -115,8 +118,8 @@ class FastConvolution<OutputType,KernelType,DataType,complex_d>: public Mother_F
 		// Data FFT
         complex_d** gs ; 
         complex_d** hs ;
-		
-		fftw_plan kernel_plan;
+        
+        fftw_plan kernel_plan;
 		fftw_plan g_plan;
 		fftw_plan h_plan;
         

@@ -28,16 +28,21 @@ from IPython import get_ipython
 ipython = get_ipython()
 # NUMPY
 from numpy import (array, meshgrid, arange, zeros, array_equal, around
-                   , convolve , int16 , size , savez, log2
-                   , array_equal , allclose )
+                   , convolve , int16 , float64 , size , savez, log2
+                   , array_equal , allclose , sin, cos , tan , exp
+                   , sqrt, absolute, sign , pi, concatenate)
 from numpy.fft import fft, rfft, fftfreq
 from numpy.random import normal, randint 
 
 # SCIPY 
 from scipy.signal import fftconvolve
+from scipy.special import fresnel
+
+#math
+from math import pi
 
 # Garbage collection
 import gc
 
 # CUSTOM PY MODULE stuff
-from Python_Functions import*
+from My_Functions import*

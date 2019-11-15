@@ -9,9 +9,9 @@ from Fast_convolution import *
 ####################################
 ## Setup variables
 l_kernel = 1<<8;
-l_data= 1<<28;
+l_data= 1<<14;
 l_fft = 1<<10;
-n_threads = 36 ;
+n_threads = 72 ;
 convolution_type = 'fft'; # Default value
 ####################################
 
@@ -27,16 +27,23 @@ output_full = array(X.output_full, copy = False);
 
 # Generate random data
 mu=0
-sigma=2**8
-data[:]  = int16( normal(mu,sigma,l_data) );
+sigma=2**12
 
 dt = 0.03125; # [ns]; # Default value
 (kernel[:],NoyauQ) = Kernels_time(l_kernel, dt); del NoyauQ;
 
-ipython.magic("time Scipy = fftconvolve(kernel,data,mode='full') ");
-# Scipy = fftconvolve(kernel,data,mode='full') 
+error = zeros(output_full.size);
+Repetitions =10000
+for i in arange(Repetitions):
+    data[:]  = int16( normal(mu,sigma,l_data) );
+    Scipy = fftconvolve(kernel,data,mode='full');
+    X.execute();
+    error += absolute(Scipy - output_full);
 
-ipython.magic ("time X.execute();");
+SLICE = slice( None, None, None );   
+figure
+plot(error[SLICE]);
+
 ####################################
 
 # fig, axs = subplots(3,1)

@@ -1,12 +1,13 @@
-//Constructor
+//MOTHER CONSTRUCTOR
 template <class OutputType, class KernelType, class DataType, class ComplexType>
 Mother_FastConvolution<OutputType,KernelType,DataType,ComplexType>::Mother_FastConvolution
 (	
 	uint64_t L_kernel,  uint64_t L_data, uint32_t L_FFT, std::string Convolution_type, int n_threads
 ):
-	L_FFT(L_FFT) , Convolution_type(Convolution_type)
-	,n_threads(n_threads)
+	Convolution_type(Convolution_type)
     , Time_execution(0)
+    ,L_FFT(L_FFT)
+	,n_threads(n_threads)
 	,L_kernel(L_kernel) , L_data(L_data)
 	,kernel(NULL), data(NULL), output(NULL)
 {
@@ -23,7 +24,7 @@ Mother_FastConvolution<OutputType,KernelType,DataType,ComplexType>::Mother_FastC
 	cast_and_alloc();
 }
 
-//Destructor
+//MOTHER DESTRUCTOR
 template <class OutputType, class KernelType, class DataType, class ComplexType>
 Mother_FastConvolution<OutputType,KernelType,DataType,ComplexType>::~Mother_FastConvolution()
 {	
@@ -101,10 +102,12 @@ void Mother_FastConvolution<OutputType,KernelType,DataType,ComplexType>::Conv_ba
 	}
 }
 
-////////////////////////////////////////////
-//// Child class partial specialization
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//// CHILD CLASS PARTIAL SPECIALIZATION
 
-// Constructors
+//CHILD CONSTRUCTORS
 template <class OutputType, class KernelType, class DataType>
 FastConvolution<OutputType,KernelType,DataType,complex_f>::FastConvolution 
 	(
@@ -113,13 +116,14 @@ FastConvolution<OutputType,KernelType,DataType,complex_f>::FastConvolution
 	: Mother_FastConvolution<OutputType,KernelType,DataType,complex_f>(L_kernel , L_data , L_FFT , Convolution_type, n_threads)
     , kernel_complex(NULL), gs(NULL), hs(NULL)
 {	
-    printf( "Begin Consgtructor \n" );
+    // printf( "float : Begin Consgtructor \n" );
     omp_set_num_threads(n_threads);
     this->n_threads = n_threads ;
+    // printf("\t n_threads = %d \n", n_threads);
     fftwf_import_wisdom_from_filename("FFTWF_Wisdom.dat");
     prepare_heap();
     prepare_plans();
-    printf( "End Consgtructor \n" );
+    // printf( "float : End Consgtructor \n" );
 }
 
 template <class OutputType, class KernelType, class DataType>
@@ -130,62 +134,95 @@ FastConvolution<OutputType,KernelType,DataType,complex_d>::FastConvolution
 	: Mother_FastConvolution<OutputType,KernelType,DataType,complex_d>(L_kernel , L_data , L_FFT , Convolution_type, n_threads)
     , kernel_complex(NULL), gs(NULL), hs(NULL)
 {	
-    printf( "Begin Consgtructor \n" );
+    // printf( "double : Begin Consgtructor \n" );
     omp_set_num_threads(n_threads);
     this->n_threads = n_threads ;
     fftw_import_wisdom_from_filename("FFTW_Wisdom.dat");
     prepare_heap();
     prepare_plans();
-    printf( "End Consgtructor \n" );
+    // printf( "double : End Consgtructor \n" );
 }
 
-// Destructors
+//CHILD DESTRUCTOR
 template <class OutputType, class KernelType, class DataType>
 FastConvolution<OutputType,KernelType,DataType,complex_f>::~FastConvolution()
 {
-    printf( "Begin Destructor \n" );
+    // printf( "float : Begin Destructor \n" );
     free_daughter();
     fftwf_cleanup(); 
-    printf( "End Destructor \n" );
+    // printf( "float : End Destructor \n" );
 }
 
 template <class OutputType, class KernelType, class DataType>
 FastConvolution<OutputType,KernelType,DataType,complex_d>::~FastConvolution()
 {
-    printf( "Begin Destructor \n" );
+    // printf( "double : Begin Destructor \n" );
     free_daughter();
     fftw_cleanup(); 
-    printf( "End Destructor \n" );
+    // printf( "double : End Destructor \n" );
 }
 
 // SET_N_THREADS METHODS
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_f>::set_n_threads( int n_threads )
 {
-    printf( "Begin set_n_threads \n" );
+    // printf( "float : Begin set_n_threads \n" );
     free_daughter();
     this->n_threads = n_threads ;
     omp_set_num_threads(n_threads);
     prepare_heap();
-    printf( "End set_n_threads \n" );
+    prepare_plans();
+    // printf( "float : End set_n_threads \n" );
 }
 
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_d>::set_n_threads( int n_threads )
 {
-    printf( "Begin set_n_threads \n" );
+    // printf( "double : Begin set_n_threads \n" );
     free_daughter();
     this->n_threads = n_threads ;
     omp_set_num_threads(n_threads);
     prepare_heap();
-    printf( "End set_n_threads \n" );
+    prepare_plans();
+    // printf( "double : End set_n_threads \n" );
+}
+
+// SET_L_FFT METHODS
+template <class OutputType, class KernelType, class DataType>
+void FastConvolution<OutputType,KernelType,DataType,complex_f>::set_L_FFT( uint32_t L_FFT )
+{
+    // printf( "float : Begin set_L_FFT \n" );
+    free_daughter();
+    this->L_FFT = L_FFT;
+	this->L_chunk = L_FFT - this->L_kernel + 1; // Prevents cyclic convolution
+	this->N_chunks = this->L_data/this->L_chunk;
+	this->L_reste = this->L_data%this->L_chunk;
+	this->checks();
+    prepare_heap();
+    prepare_plans();
+    // printf( "float : End set_L_FFT \n" );
+}
+
+template <class OutputType, class KernelType, class DataType>
+void FastConvolution<OutputType,KernelType,DataType,complex_d>::set_L_FFT( uint32_t L_FFT )
+{
+    // printf( "double : Begin set_L_FFT \n" );
+    free_daughter();
+    this->L_FFT = L_FFT;
+	this->L_chunk = L_FFT - this->L_kernel + 1; // Prevents cyclic convolution
+	this->N_chunks = this->L_data/this->L_chunk;
+	this->L_reste = this->L_data%this->L_chunk;
+	this->checks();
+    prepare_heap();
+    prepare_plans();
+    // printf( "double : End set_L_FFT \n" );
 }
 
 // PREPARE_HEAP METHODS
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_f>::prepare_heap()
 {
-    printf( "Begin prepare_heap \n" );
+    // printf( "float : Begin prepare_heap \n" );
     std::string Convolution_type = this->Convolution_type;
 	uint32_t L_FFT = this->L_FFT;
     int n_threads = this->n_threads;
@@ -194,21 +231,21 @@ void FastConvolution<OutputType,KernelType,DataType,complex_f>::prepare_heap()
 	{	
         kernel_complex = (complex_f*)fftwf_malloc( 2*(L_FFT/2+1) * sizeof(float) ); // For memory alignment
         // For in-place transforms g as 2( n/2 + 1 )  elements. The elements beyond the first n are unused padding.
-        gs = (complex_f **) malloc(n_threads* sizeof(float));
-        hs = (complex_f **) malloc(n_threads* sizeof(float));  
+        gs = (complex_f **) malloc(n_threads* sizeof(float*));
+        hs = (complex_f **) malloc(n_threads* sizeof(float*));  
         #pragma omp parallel
         {
             gs[omp_get_thread_num()] = (complex_f*)fftwf_malloc( 2 * (L_FFT/2+1) * sizeof(float) ); // fftwf_malloc for memory alignment;
             hs[omp_get_thread_num()] = (complex_f*)fftwf_malloc( 2 * (L_FFT/2+1) * sizeof(float) ); // fftwf_malloc for memory alignment;
         }
 	}
-    printf( "End prepare_heap  \n" );
+    // printf( "float : End prepare_heap  \n" );
 }
 
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_d>::prepare_heap()
 {
-    printf( "Begin prepare_heap \n" );
+    // printf( "double : Begin prepare_heap \n" );
     std::string Convolution_type = this->Convolution_type;
 	uint32_t L_FFT = this->L_FFT;
     int n_threads = this->n_threads;
@@ -217,45 +254,42 @@ void FastConvolution<OutputType,KernelType,DataType,complex_d>::prepare_heap()
 	{	
         kernel_complex = (complex_d*)fftw_malloc( 2*(L_FFT/2+1) * sizeof(double) ); // For memory alignment
         // For in-place transforms g as 2( n/2 + 1 )  elements. The elements beyond the first n are unused padding.
-        gs = (complex_d **) malloc(n_threads* sizeof(double));
-        hs = (complex_d **) malloc(n_threads* sizeof(double));  
+        gs = (complex_d **) malloc(n_threads* sizeof(double*));
+        hs = (complex_d **) malloc(n_threads* sizeof(double*));  
         #pragma omp parallel
         {
             gs[omp_get_thread_num()] = (complex_d*)fftw_malloc( 2 * (L_FFT/2+1) * sizeof(double) ); // fftw_malloc for memory alignment;
             hs[omp_get_thread_num()] = (complex_d*)fftw_malloc( 2 * (L_FFT/2+1) * sizeof(double) ); // fftw_malloc for memory alignment;
         }
 	}
-    printf( "End prepare_heap  \n" );
+    // printf( "double : End prepare_heap  \n" );
 }
 
 // PREPARE_PLANS METHODS
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_f>::prepare_plans()
 {   
-    printf( "Begin prepare_plans \n" );
+    // printf( "flaot : Begin prepare_plans \n" );
     std::string Convolution_type = this->Convolution_type;
 	uint32_t L_FFT = this->L_FFT;
     
     if ( Convolution_type == "fft" )
 	{	
         // Prepare plan for real to half complex transform
-        printf("\t kernel \n");
         kernel_plan = fftwf_plan_dft_r2c_1d( L_FFT , (float*)kernel_complex , reinterpret_cast<fftwf_complex*>(kernel_complex) , FFTW_EXHAUSTIVE); // in-place fft
         // Prepare plans : r2c and c2r
-        printf("\t g_plan \n");
         g_plan = fftwf_plan_dft_r2c_1d( L_FFT , (float*)gs[0] , reinterpret_cast<fftwf_complex*>(hs[0]) , FFTW_EXHAUSTIVE);
             //  in-place transform of h.
             //The c2r transform destroys its input array even for out-of-place transforms
-        printf("\t h_plan \n");
         h_plan = fftwf_plan_dft_c2r_1d( L_FFT, reinterpret_cast<fftwf_complex*>(hs[0]) , (float*)hs[0] , FFTW_EXHAUSTIVE); 
 	}
-    printf( "End prepare_plans \n" );
+    // printf( "float : End prepare_plans \n" );
 }
 
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_d>::prepare_plans()
 {   
-    printf( "Begin prepare_plans \n" );
+    // printf( "double : Begin prepare_plans \n" );
     std::string Convolution_type = this->Convolution_type;
 	uint32_t L_FFT = this->L_FFT;
     
@@ -269,82 +303,60 @@ void FastConvolution<OutputType,KernelType,DataType,complex_d>::prepare_plans()
             //The c2r transform destroys its input array even for out-of-place transforms
         h_plan = fftw_plan_dft_c2r_1d( L_FFT, reinterpret_cast<fftw_complex*>(hs[0]) , (double*)hs[0] , FFTW_EXHAUSTIVE); 
 	}
-    printf( "End prepare_plans \n" );
+    // printf( "double : End prepare_plans \n" );
 }
 
 // FRREE_DAUGHTER METHODS
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_f>::free_daughter()
 {
-    printf( "Begin free_daughter \n" );
+    // printf( "float : Begin free_daughter \n" );
+    int n_threads = this->n_threads;
     fftwf_export_wisdom_to_filename("FFTWF_Wisdom.dat");
     // fftwf_destroy_plan(kernel_plan); 
     // fftwf_destroy_plan(g_plan); 
     // fftwf_destroy_plan(h_plan);
     
+    // printf( "float : \t Before free kernel \n" );
     fftwf_free(kernel_complex); kernel_complex = NULL ;
-    #pragma omp parallel
+    // printf( "float : \t Before free gs hs \n" );
+    for(int i = 0 ; i < n_threads ; i++)
     {
-        fftwf_free( gs[omp_get_thread_num()] ) ; gs[omp_get_thread_num()] = NULL ;
-        fftwf_free( hs[omp_get_thread_num()] ) ; hs[omp_get_thread_num()] = NULL ;
+        fftwf_free( gs[i] ) ; gs[i] = NULL ;
+        fftwf_free( hs[i] ) ; hs[i] = NULL ;
     }
-    printf( "End free_daughter \n" );
+    free(gs) ; gs = NULL ;
+    free(hs) ; hs = NULL ;
+    // printf( "float : End free_daughter \n" );
 }
 
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_d>::free_daughter()
 {
-    printf( "Begin free_daughter \n" );
+    int n_threads = this->n_threads;
+    // printf( "double : Begin free_daughter \n" );
     fftw_export_wisdom_to_filename("FFTW_Wisdom.dat");
+    // printf( "double : Before export wisdom \n" );
     // fftw_destroy_plan(kernel_plan); 
     // fftw_destroy_plan(g_plan); 
     // fftw_destroy_plan(h_plan);
     
     fftw_free(kernel_complex); kernel_complex = NULL ;
-    #pragma omp parallel
+    for(int i = 0 ; i < n_threads ; i++)
     {
-        fftw_free( gs[omp_get_thread_num()] ) ; gs[omp_get_thread_num()] = NULL ;
-        fftw_free( hs[omp_get_thread_num()] ) ; hs[omp_get_thread_num()] = NULL ;
+        fftw_free( gs[i] ) ; gs[i] = NULL ;
+        fftw_free( hs[i] ) ; hs[i] = NULL ;
     }
-    printf( "End free_daughter \n" );
-}
-
-// SET_L_FFT METHODS
-template <class OutputType, class KernelType, class DataType>
-void FastConvolution<OutputType,KernelType,DataType,complex_f>::set_L_FFT( uint32_t L_FFT )
-{
-    printf( "Begin set_L_FFT \n" );
-    free_daughter();
-    this->L_FFT = L_FFT;
-	this->L_chunk = L_FFT - this->L_kernel + 1; // Prevents cyclic convolution
-	this->N_chunks = this->L_data/this->L_chunk;
-	this->L_reste = this->L_data%this->L_chunk;
-	this->checks();
-    prepare_heap();
-    prepare_plans();
-    printf( "End set_L_FFT \n" );
-}
-
-template <class OutputType, class KernelType, class DataType>
-void FastConvolution<OutputType,KernelType,DataType,complex_d>::set_L_FFT( uint32_t L_FFT )
-{
-    printf( "Begin set_L_FFT \n" );
-    free_daughter();
-    this->L_FFT = L_FFT;
-	this->L_chunk = L_FFT - this->L_kernel + 1; // Prevents cyclic convolution
-	this->N_chunks = this->L_data/this->L_chunk;
-	this->L_reste = this->L_data%this->L_chunk;
-	this->checks();
-    prepare_heap();
-    prepare_plans();
-    printf( "End set_L_FFT \n" );
+    free(gs) ; gs = NULL ;
+    free(hs) ; hs = NULL ;
+    // printf( "double : End free_daughter \n" );
 }
 
 // EXECUTIONS METHODS
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_f>::execute()
 {   
-    printf( "Begin exxecute \n" );
+    // printf( "Begin exxecute \n" );
 	Timer Timer(& this->Time_execution); 
 	KernelType* kernel = this->kernel;
 	DataType* data = this->data;
@@ -411,8 +423,13 @@ void FastConvolution<OutputType,KernelType,DataType,complex_f>::execute()
                 fftwf_execute_dft_c2r(h_plan , reinterpret_cast<fftwf_complex*>(hs[this_thread]) , (float*)hs[this_thread] );  // h now contains the results of the chunk's contribution to the convolution product
                 
                 // This is not thread safe...
-                for(j=0; j < L_FFT ; j++)
+                for(j=0; j < L_chunk ; j++)
                 {
+                    output[i*L_chunk+j] += (OutputType)( ( ( (float*)hs[this_thread])[j] )/L_FFT );
+                }
+                for(j=L_chunk; j < L_FFT ; j++)
+                {
+                    #pragma omp atomic update
                     output[i*L_chunk+j] += (OutputType)( ( ( (float*)hs[this_thread])[j] )/L_FFT );
                 }
                 //////////////////
@@ -458,13 +475,13 @@ void FastConvolution<OutputType,KernelType,DataType,complex_f>::execute()
 	{
 		throw std::runtime_error("Convolution_type attribute is invalid.");
 	}
-	printf( "End exxecute \n" );	
+	// printf( "End exxecute \n" );	
 }
 
 template <class OutputType, class KernelType, class DataType>
 void FastConvolution<OutputType,KernelType,DataType,complex_d>::execute()
 {   
-    printf( "Begin exxecute \n" );
+    // printf( "Begin exxecute \n" );
 	Timer Timer(& this->Time_execution); 
 	KernelType* kernel = this->kernel;
 	DataType* data = this->data;
@@ -530,9 +547,13 @@ void FastConvolution<OutputType,KernelType,DataType,complex_d>::execute()
                 
                 fftw_execute_dft_c2r(h_plan , reinterpret_cast<fftw_complex*>(hs[this_thread]) , (double*)hs[this_thread] );  // h now contains the results of the chunk's contribution to the convolution product
                 
-                // This is not thread safe...
-                for(j=0; j < L_FFT ; j++)
+                for(j=0; j < L_chunk ; j++)
                 {
+                    output[i*L_chunk+j] += (OutputType)( ( ( (double*)hs[this_thread])[j] )/L_FFT );
+                }
+                for(j=L_chunk; j < L_FFT ; j++)
+                {
+                    #pragma omp atomic update
                     output[i*L_chunk+j] += (OutputType)( ( ( (double*)hs[this_thread])[j] )/L_FFT );
                 }
                 //////////////////
@@ -578,5 +599,5 @@ void FastConvolution<OutputType,KernelType,DataType,complex_d>::execute()
 	{
 		throw std::runtime_error("Convolution_type attribute is invalid.");
 	}
-	printf( "End exxecute \n" );	
+	// printf( "End exxecute \n" );	
 }
