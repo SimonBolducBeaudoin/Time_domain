@@ -21,8 +21,8 @@ py::class_<FastConvolution<OutputType, KernelType, DataType, ComplexType>>( m , 
 
 void init_FastConvolution(py::module &m)
 {
-	PY_FAST_CONVOLUTION(int16_t,int16_t,int16_t,complex_f);
-	PY_FAST_CONVOLUTION(int16_t,int16_t,int16_t,complex_d);
+	// PY_FAST_CONVOLUTION(int16_t,int16_t,int16_t,complex_f);
+	// PY_FAST_CONVOLUTION(int16_t,int16_t,int16_t,complex_d);
 	PY_FAST_CONVOLUTION(float,float,int16_t,complex_f);
 	PY_FAST_CONVOLUTION(double,double,int16_t,complex_d);
 }

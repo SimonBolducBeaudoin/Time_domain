@@ -44,13 +44,13 @@ template <class DataType>
 FFT<float,DataType>::~FFT()
 {	  	
 	fftwf_export_wisdom_to_filename("FFTWF_Wisdom.dat");
-	fftwf_cleanup_threads();
+	// fftwf_cleanup_threads();
 }
 template <class DataType>
 FFT<double,DataType>::~FFT()
 {	 	
 	fftw_export_wisdom_to_filename("FFTW_Wisdom.dat");
-	fftw_cleanup_threads();
+	// fftw_cleanup_threads();
 }
 //////////
 //////////set_L_FFT()

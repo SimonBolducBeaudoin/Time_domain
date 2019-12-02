@@ -4,7 +4,7 @@
 // https://pybind11.readthedocs.io/en/stable/faq.html#how-can-i-reduce-the-build-time
 
 //Python Binding and Time_Quad class instances.
-PYBIND11_MODULE(Fast_convolution, m)
+PYBIND11_MODULE(fast_convolution, m)
 {
     m.doc() = " test";
 	init_FastConvolution(m);

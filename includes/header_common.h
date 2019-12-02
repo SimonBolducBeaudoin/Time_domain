@@ -16,7 +16,11 @@
 //#include <fcntl.h>
 #include <string.h>
 #include <assert.h>
-#include <math.h>
+
+#define _USE_MATH_DEFINES
+#define PI M_PI
+#include<math.h>
+#include<memory>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/complex.h>
@@ -24,6 +28,8 @@
 namespace py = pybind11;
 typedef std::complex<float> complex_f;
 typedef std::complex<double> complex_d;
+typedef unsigned int uint;
+
 
 #include <fftw3.h>
 	

@@ -4,18 +4,19 @@
 execfile("common_header.py")
 
 # Dont forget to drop your library.pyd in the current folder
-from Time_quadratures import *
+from time_quadratures import *
 
 ####################################
 ## Setup variables
-l_kernel = 1<<8 + 1 ;
+l_kernel = (1<<8) + 1 ;
 l_data= 1<<14;
 l_fft = 1<<10;
-n_threads = 72 ;
+n_threads = 2 ;
+dt = 0.03125 ;
 convolution_type = 'fft'; # Default value
 ####################################
 ############# Declare Time_Quad objects
-X  = TimeQuad_double_int16_t( l_kernel, l_data, l_fft, convolution_type , n_threads );
+X  = TimeQuad_int16_t( l_kernel = l_kernel, l_data = l_data , l_fft = l_fft , n_threads = n_threads );
 
 # Numpy instance of arrays
 data = array(X.data, copy = False);
@@ -32,9 +33,9 @@ data[:]  = int16( normal(mu,sigma,l_data) );
 
 #### Using scipy and python library
 print "Calculation with Scipy"
-(NoyauP,NoyauQ) = Kernels_time(l_kernel, dt)   # [ns^-1/2]
-P_i_scipy = fftconvolve(NoyauP,data,mode='full') # shape 9001
-Q_i_scipy = fftconvolve(NoyauQ,data,mode='full')
+# (NoyauP,NoyauQ) = Kernels(l_kernel, dt)   # [ns^-1/2]
+P_i_scipy = fftconvolve(kernel_p,data,mode='full') # shape 9001
+Q_i_scipy = fftconvolve(kernel_q,data,mode='full')
 ####
 
 #### Using Time_Quad

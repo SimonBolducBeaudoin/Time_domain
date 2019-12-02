@@ -9,9 +9,9 @@ from Fast_convolution import *
 ####################################
 ## Setup variables
 l_kernel = 1<<8;
-l_data= 1<<28;
+l_data= 1<<16;
 l_fft = 1<<10;
-n_threads = 36 ;
+n_threads = 2 ;
 convolution_type = 'fft'; # Default value
 ####################################
 

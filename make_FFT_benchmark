@@ -28,7 +28,7 @@ SUBMOD_DIR = $(FFT_benchmark)
 
 TARGET_NAME = fft_benchmark
 TARGET_EXT = $(if $(filter $(OS),Windows_NT),.pyd,.so)
-TARGET = $(SUBMOD_DIR)/$(TARGET_NAME)$(TARGET_EXT)
+TARGET = PY-Test/$(TARGET_NAME)$(TARGET_EXT)
 
 
 # standard subdirectories

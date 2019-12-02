@@ -41,50 +41,175 @@ def SquareFunction(x,delta_x):
         if absolute(point) <= delta_x : answer[i] = 1/delta_x
     return answer  
     
-def NoisySinSquare ( A = 1<<14 , f = sqrt(2) , dt = 0.03125 , number_of_cycle_width =  10  , SNR = 100 ):
-    # n : number of points of the output vector
-    # A : Amplitude
-    # f : [GHz]
-    # dt : time step [ns] 
-    # sigma_t : enveloppe width (std dev) on time axis
-    # sigma_y : gaussian noise width (std dev)
-    
-    # check that n is odd
-    delta_t = number_of_cycle_width/f ; 
-    n = int ( 4*delta_t/dt ) ;
-    if n//2 != 1 :
-        n += 1 ;
-        
-    t = float64 ( (arange(n)-n//2)*dt ) ;
-     
-    Enveloppe = SquareFunction(t, delta_t) ;
+def SinCycle ( f = 1 , dt = 0.03125 , n = 100 ):        
+    t = float64 ( (arange(n)*dt ) ) ;
     
     omega = 2*pi*f;
     
-    return  A*Enveloppe*( sin(omega*t) + normal(0, 1/float(SNR),n) ) , t ; 
+    return  sin(omega*t) , t ; 
+
+def Window_Tukey(alpha,N) :
+    Y = ones(N);
+    for i in arange( int(alpha*N/2) ):
+       Y[i] = (1.0/2)*( 1+cos( 2*pi*i/(alpha*N) - pi )  )
+    for i in arange( int(N*(1-alpha/2)) , int(N) ):
+       Y[i] = (1.0/2)*( 1+cos( 2*pi*i/(alpha*N) - 2*pi/alpha + pi )  )
+    return Y
     
-def Kernels_impaires( l_kernel = 257 , dt = 0.3125 ) :
+def Kernels( l_kernel = 257 , dt = 0.3125 , alpha = 0.5) :
     # Returns the time kernel of p(t) and q(t)
     # Kernel de p(t) => 1/sqrt(|t|) 
     # Kernel de q(t) => sgn(t)/sqrt(|t|)
     
-    f_min = 1/(l_kernel*dt);
+    # Units of time are [ns]
+    # Units of frequencies are [GHz]
+    
+    # if l_kernel%2 != 1 : raise ValueError('l_kernel must be odd') ; 
+    
+    # # Paramètre du filtre temps/frequences
+    # G = 1.0/(2.0*dt); # frequence de Nyquist / Borne supérieur de la bande passante numérique
+    # F = (10.0/16.0) * G ; # Borne supérieur de la bande passante analogique
+    
+    # # Parameters of 2D Tukey filter (frequency part) 
+    # a = 1/(G-F) ; # a > 0 
+    # b = -1.0* F/(G-F); 
+    
+    # # devrait tjrs être un multiple de dt
+    # I = dt*l_kernel/2.0 ; # Bornes supérieur de la bande passant numérique en temps
+    # # H = 64.0*dt/2.0 ; # Bornes inférieur de la bande passant analogique en temps
+    # H = 64.0*dt/1.0 ; # Bornes inférieur de la bande passant analogique en temps
+    
+    # # Parameters of 2D Tukey filter (time part) 
+    # c = 1/(I-H)  ;
+    # d = -1.0 * H/(I-H);
+ 
+    # # vecteurs temps
+    # t_H = arange( dt , H , dt ) ;
+    # t_I = arange( t_H[-1]+dt , I , dt )  ;
+ 
+    # # Kernels at t = 0
+    # tmp = sqrt( 2.0*absolute(a) ) ;
+    
+    # ZERO_p = 2.0 *( sqrt(F) + sqrt(G) ) \
+    # + 1/tmp \
+    # * (\
+    # cos(pi*b) * ( fresnel( tmp*sqrt(G))[1] - fresnel(tmp*sqrt(F))[1] ) \
+    # - sin(pi*b) * sign(a) * ( fresnel( tmp*sqrt(G))[0] - fresnel(tmp*sqrt(F))[0] ) \
+    # ) ;
+    
+    # ZERO_q = 0 ;
+    
+    
+    # # Kernles at 0<t<H
+        # # variables temporaire pour p
+    # tmp = sqrt( absolute(t_H) )
+    # p_tmp1 = ( 1.0/tmp ) * ( fresnel( tmp*sqrt(4.0*F) )[1]  + fresnel( tmp*sqrt(4.0*G) )[1] )
+    
+    # tmp = sqrt( 2.0 * absolute( a - 2.0*t_H) )
+    # p_tmp2 = ( 1.0/tmp ) * \
+    # ( \
+    # cos(pi*b)   * ( fresnel( tmp*sqrt(G) )[1] - fresnel( tmp*sqrt(F) )[1] ) \
+    # - sin(pi*b) * sign(a - 2.0*t_H) *( fresnel( tmp*sqrt(G) )[0] - fresnel( tmp*sqrt(F) )[0] ) \
+    # )
+    
+    # tmp = sqrt( 2.0 * absolute( a + 2.0*t_H) )
+    # p_tmp3 = ( 1.0/tmp ) * \
+    # ( \
+    # cos(pi*b) * ( fresnel( tmp*sqrt(G) )[1] - fresnel( tmp*sqrt(F) )[1] ) \
+    # - sin(pi*b) * sign(a + 2.0*t_H) *( fresnel( tmp*sqrt(G) )[0] - fresnel( tmp*sqrt(F) )[0] ) \
+    # )
+    
+        # # variables temporaire pour q
+    # q_tmp1 = ( 1.0/sqrt(t_H) ) * ( fresnel( sqrt(4*F*t_H) )[0]  + fresnel( sqrt(4*G*t_H) )[0] )
+    
+    # tmp = sqrt( 2.0* absolute(a + 2.0 * t_H ) )
+    # q_tmp2 = ( 1.0/tmp ) * \
+    # ( \
+    # cos(pi*b)   * ( fresnel( tmp*sqrt(G) )[0] - fresnel( tmp*sqrt(F) )[0] ) \
+    # + sin(pi*b) * sign( a + 2.0 * t_H ) * ( fresnel( tmp*sqrt(G) )[1] - fresnel( tmp*sqrt(F) )[1] ) \
+    # )
+    
+    # tmp = sqrt(2.0* absolute(2.0* t_H - a) )
+    # q_tmp3 = ( 1.0/tmp ) * \
+    # ( \
+    # cos(pi*b) * ( fresnel( tmp*sqrt(G) )[0] - fresnel( tmp*sqrt(F) )[0] ) \
+    # - sin(pi*b) * sign(2.0* t_H - a) * ( fresnel( tmp*sqrt(G) )[1] - fresnel( tmp*sqrt(F) )[1] ) \
+    # )
+    
+        # # Combinaison des variables temporaires
+    # p_H = p_tmp1 + p_tmp2 + p_tmp3 ;
+    # q_H = q_tmp1 + q_tmp2 + q_tmp3 ;
+
+    # # Kernles at H<t<I
+        # # variables temporaire pour p
+    # tmp = sqrt( absolute(t_I) )
+    # p_tmp1 = ( 1.0/tmp ) * ( fresnel( tmp*sqrt(4.0*F) )[1]  + fresnel( tmp*sqrt(4.0*G) )[1] )
+    
+    # tmp = sqrt( 2.0 * absolute( a - 2.0*t_I) )
+    # p_tmp2 = ( 1.0/tmp ) * \
+    # ( \
+    # cos(pi*b)   * ( fresnel( tmp*sqrt(G) )[1] - fresnel( tmp*sqrt(F) )[1] ) \
+    # - sin(pi*b) * sign(a - 2.0*t_I) *( fresnel( tmp*sqrt(G) )[0] - fresnel( tmp*sqrt(F) )[0] ) \
+    # )
+    
+    # tmp = sqrt( 2.0 * absolute( a + 2.0*t_I) )
+    # p_tmp3 = ( 1.0/tmp ) * \
+    # ( \
+    # cos(pi*b) * ( fresnel( tmp*sqrt(G) )[1] - fresnel( tmp*sqrt(F) )[1] ) \
+    # - sin(pi*b) * sign(a + 2.0*t_I) *( fresnel( tmp*sqrt(G) )[0] - fresnel( tmp*sqrt(F) )[0] ) \
+    # )
+    
+        # # variables temporaire pour q
+    # q_tmp1 = ( 1.0/sqrt(t_I) ) * ( fresnel( sqrt(4*F*t_I) )[0]  + fresnel( sqrt(4*G*t_I) )[0] )
+    
+    # tmp = sqrt( 2.0* absolute(a + 2.0 * t_I ) )
+    # q_tmp2 = ( 1.0/tmp ) * \
+    # ( \
+    # cos(pi*b)   * ( fresnel( tmp*sqrt(G) )[0] - fresnel( tmp*sqrt(F) )[0] ) \
+    # + sin(pi*b) * sign( a + 2.0 * t_I ) * ( fresnel( tmp*sqrt(G) )[1] - fresnel( tmp*sqrt(F) )[1] ) \
+    # )
+    
+    # tmp = sqrt(2.0* absolute(2.0* t_I - a) )
+    # q_tmp3 = ( 1.0/tmp ) * \
+    # ( \
+    # cos(pi*b) * ( fresnel( tmp*sqrt(G) )[0] - fresnel( tmp*sqrt(F) )[0] ) \
+    # - sin(pi*b) * sign(2.0* t_I - a) * ( fresnel( tmp*sqrt(G) )[1] - fresnel( tmp*sqrt(F) )[1] ) \
+    # )
+    
+    # tmp4 = (1.0/2.0)*(1.0+cos( pi*c*t_I + pi*d ))
+    # # tmp4 = (1.0)
+        # # Combinaison des variables temporaires
+    # p_I = tmp4 * ( p_tmp1 + p_tmp2 + p_tmp3 );
+    # q_I = tmp4 * ( q_tmp1 + q_tmp2 + q_tmp3 );
+    
+    # # Partie positive des signaux
+    # positive_p = concatenate( (p_H , p_I) ) ;
+    # positive_q = concatenate( (q_H , q_I) ) ;
+    
+    # kernel_p = concatenate( (positive_p[::-1] , [ZERO_p] , positive_p ) ) ;
+    # kernel_q = concatenate( ( (-1.0)*positive_q[::-1] , [ZERO_q] , positive_q )) ;
+     
+    # return kernel_p , kernel_q
+    
+    if l_kernel%2 != 1 : raise ValueError('l_kernel must be odd') ; 
     
     t_plus = dt*( arange(l_kernel//2) + 1 ) ;
-    # positive_q = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )[0] - fresnel( sqrt( 4 * t_plus * f_min ) )[0] );
-    # positive_p = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )[1] - fresnel( sqrt( 4 * t_plus * f_min ) )[1] );
-    positive_q = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )[0]  );
-    positive_p = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )[1]  );
+    
+    positive_q , positive_p = ( 2.0/sqrt(t_plus) ) * (  fresnel( sqrt( (2.0/dt)*t_plus ) )  );
     
     kernel_p = concatenate( (positive_p[::-1] , [2.0*sqrt(2.0)/sqrt(dt)] , positive_p ) ) ;
     kernel_q = concatenate( ( (-1)*positive_q[::-1] , [0] , positive_q )) ;
-
-    # half_abscisse = dt*( arange(l_kernel//2) + 1 ) ;
-    # half_kernel  = 1/sqrt( absolute( half_abscisse ) ) ;
-
-    # kernel_p = concatenate( (half_kernel[::-1] , [2.0*sqrt(2.0)/sqrt(dt)]  , half_kernel ) ) ;
-    # kernel_q = concatenate( ((-1)*half_kernel[::-1] , [0] , half_kernel ) ) ;
-
+    
+    Window = Window_Tukey( alpha , l_kernel ) ;
+    kernel_p = Window*kernel_p ;
+    kernel_q = Window*kernel_q ;
+    
+    kernel_p = Window * concatenate( (fft(kernel_p)[l_kernel//2+1:],fft(kernel_p)[:l_kernel//2+1]) )
+    kernel_q = Window * concatenate( (fft(kernel_q)[l_kernel//2+1:],fft(kernel_q)[:l_kernel//2+1]) )
+    
+    kernel_p = ifft( concatenate( ( kernel_p[ l_kernel//2: ], kernel_p[:l_kernel//2] ) ) )
+    kernel_q = ifft( concatenate( ( kernel_q[ l_kernel//2: ], kernel_q[:l_kernel//2] ) ) )
+    
     return kernel_p, kernel_q
 
 # Juste pour emballer les variables dans la fonction
@@ -112,53 +237,6 @@ def Beta_t(Df  = 0.005e9,N =  2**12,Fmin = 0.5e9,Fmax = 10e9) :
     InverseFFT = ifft(Beta_f)
     figure(figsize=(20,5))
     plot(t*10**9,abs(InverseFFT.real));xlabel('[ns]'); xlim(-1,1);
-    
-def Abscisse_Kernel_time(N,dt) :
-    # Créer un vecteur t de t.size = 2(N//2) centrée en 0 et dont les éléments sont séparé par dt
-    # S'assure de N est paire avec des opérations directes sur les bits
-    import warnings
-    if N & 1 :# est impaire
-        N = N-1
-        warnings.warn('Le nombre de points dans le kernel points doit être paire. N_k a été changé pour N_k-1.')
-        
-    from numpy import concatenate, arange
-    return concatenate((-1*arange(1,N/2+1)[::-1],arange(1,N/2+1)),axis=None)*dt
-
-def Abscisse_Kernel_freq(N,dt) :
-    # Créer un vecteur f de f.size = 2*N dont le première élément est la fréquence nulle
-    # les éléments f[1:N-1] sont les fréquence positives dont la valeur maximale est (1/dt)*N-1
-    # les éléments f[N:] sont les fréquences négatives énumérées en sans croissant. La valeur la plus négatives étant (1/dt)*N
-        
-    from numpy.fft import fftfreq
-    return fftfreq(N)*(1/dt) # Si nb de points paire max (freq_neq) \neq max(freq_pos)
-
-def Kernels_time(N,dt) :
-    # Returns the time kernel of p(t) and q(t)
-    # Kernel de p(t) => 1/sqrt(|t|) 
-    # Kernel de q(t) => sgn(t)/sqrt(|t|) 
-    
-    from numpy import sqrt, absolute, sign
-    t = Abscisse_Kernel_time(N,dt)
-    return 1/sqrt(absolute(t)),sign(t)/sqrt(absolute(t))
-
-def Kernels_freq(N,dt) :
-    # Returns the Kernel in the frequencie domaine for p(t) and q(t). The size of the kernel is 2N
-    
-    # S'assure de N est paire avec des opérations directes sur les bits
-    if N & 1 :# est impaire
-        N = N-1
-    import warnings
-    if N & 1 :# est impaire
-        N = N-1
-        warnings.warn('Le nombre de points dans le kernel points doit être paire. N_k a été changé pour N_k-1.')
-    
-    from numpy import sqrt, absolute, sign, sum, array, concatenate
-    t = Abscisse_Kernel_time(N,dt)
-    f = Abscisse_Kernel_freq(N,dt)
-    
-    Kernel_P = concatenate((sum(1/sqrt(absolute(t))),array(1/sqrt(absolute(f[1:])))),axis=None) 
-    Kernel_Q =  (-1j)*concatenate((0,array(sign(f[1:])/sqrt(absolute(f[1:])))),axis=None) 
-    return Kernel_P, Kernel_Q
     
 def FFTConv(V_i, N, N_FFT, dt):
     # V_i : le np.array de mesure en tension
