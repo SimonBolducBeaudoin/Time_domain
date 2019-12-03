@@ -1,6 +1,6 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
-execfile("common_header.py")
+# execfile("../common_header.py")
 
 def NoisySinGauss ( A = 1<<14 , f = 0.798132459087 , dt = 0.03125 , number_of_cycle_width =  10  , SNR = 10 ):
     # n : number of points of the output vector

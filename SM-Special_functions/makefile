@@ -7,6 +7,11 @@ SRC  = $(wildcard *.cpp)
 OBJ  = $(patsubst %.cpp, %.o, $(SRC))
 DEPS = $(OBJ:.o=.d)
 
+# All the external objects that the current submodule depends on
+# Those objects have to be up to date
+tempo1 = $(wildcard ../SM-Numerical_integration/*.a)
+EXTERNAL_OBJ = $(tempo1)
+
 # flags
 CFLAGS = -Ofast -march=native -MMD -MP -Wall $(OS:Windows_NT=-DMS_WIN64 -D_hypot=hypot)
 SHRFLAGS = -fPIC -shared
@@ -17,9 +22,9 @@ LDLIBS = -lm
 $(TARGET) : $(OBJ)
 	@ echo " "
 	@ echo "---------Compiling static library $(TARGET)---------"
-	ar cr $(TARGET) $(OBJ)
+	ar cr $(TARGET) $(OBJ) $(EXTERNAL_OBJ) 
 
-%.o : %.cppmake
+%.o : %.cpp
 	@ echo " "
 	@ echo "---------Compile object $@ from $<--------"
 	$(CC) $(SHRFLAGS) -c -Wall -o $@ $< $(CFLAGS) $(FFTWFLAGS) $(OMPFLAGS) $(LDLIBS)

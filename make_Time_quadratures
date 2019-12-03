@@ -7,6 +7,8 @@ OMP_EXTRA = SM-Omp_extra
 Time_quadratures = SM-Time_quadratures
 Fast_convolution = SM-Fast_convolution
 Windowing = SM-Windowing
+Special_functions = SM-Special_functions
+Numerical_integration = SM-Numerical_integration
 
 # All the external objects that the current submodule depends on
 # Those objects have to be up to date
@@ -14,9 +16,9 @@ tempo1 = $(wildcard SM-Buffered_arrays/obj/*.o)
 tempo2 = $(wildcard SM-Scoped_timer/obj/*.o)
 tempo3 = $(wildcard SM-Omp_extra/obj/*.o)
 tempo4 = $(wildcard SM-Windowing/obj/*.o)
-tempo5 = $(wildcard lib/*.a)
-# tempo6 = $(wildcard lib/fresnel/*.o)
-EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3) $(tempo4) $(tempo5)
+tempo5 = $(wildcard SM-Special_functions/*.o)
+tempo6 = $(wildcard SM-Numerical_integration/*.o)
+EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3) $(tempo4) $(tempo5) $(tempo6)
 
 # The current submodule directorie
 SUBMOD_DIR = $(Time_quadratures)
@@ -24,7 +26,7 @@ SUBMOD_DIR = $(Time_quadratures)
 TARGET_NAME = time_quadratures
 TARGET_EXT = $(if $(filter $(OS),Windows_NT),.pyd,.so)
 # TARGET = $(SUBMOD_DIR)/$(TARGET_NAME)$(TARGET_EXT)
-TARGET = PY-Test/$(TARGET_NAME)$(TARGET_EXT)
+TARGET = Python/$(TARGET_NAME)$(TARGET_EXT)
 
 # standard subdirectories
 IDIR = includes
