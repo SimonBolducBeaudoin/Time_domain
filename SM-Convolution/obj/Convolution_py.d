@@ -1,7 +1,7 @@
-SM-Fast_convolution/obj/FastConvolution.o: \
- SM-Fast_convolution/src/FastConvolution.cpp \
- SM-Fast_convolution/src/../includes/FastConvolution.h \
- SM-Fast_convolution/src/../includes/../../includes/header_common.h \
+SM-Convolution/obj/Convolution_py.o: \
+ SM-Convolution/src/Convolution_py.cpp \
+ SM-Convolution/src/../includes/Convolution_py.h \
+ SM-Convolution/src/../includes/../../includes/header_common.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/pybind11.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/attr.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/cast.h \
@@ -79,14 +79,13 @@ SM-Fast_convolution/obj/FastConvolution.o: \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/detail/init.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/complex.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/numpy.h \
- includes/../SM-Buffered_arrays/includes/buffered_arrays.h \
- SM-Fast_convolution/src/../includes/../../SM-Scoped_timer/includes/scoped_timer.h \
- SM-Fast_convolution/src/../includes/../../SM-Omp_extra/includes/omp_extra.h \
- SM-Fast_convolution/src/../src/FastConvolution.tpp
+ SM-Convolution/src/../includes/../includes/Convolution.h \
+ SM-Convolution/src/../includes/../includes/../../SM-Omp_extra/includes/omp_extra.h \
+ SM-Convolution/src/../src/Convolution_py.tpp
 
-SM-Fast_convolution/src/../includes/FastConvolution.h:
+SM-Convolution/src/../includes/Convolution_py.h:
 
-SM-Fast_convolution/src/../includes/../../includes/header_common.h:
+SM-Convolution/src/../includes/../../includes/header_common.h:
 
 C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/pybind11.h:
 
@@ -242,10 +241,8 @@ C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/complex.h:
 
 C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/numpy.h:
 
-includes/../SM-Buffered_arrays/includes/buffered_arrays.h:
+SM-Convolution/src/../includes/../includes/Convolution.h:
 
-SM-Fast_convolution/src/../includes/../../SM-Scoped_timer/includes/scoped_timer.h:
+SM-Convolution/src/../includes/../includes/../../SM-Omp_extra/includes/omp_extra.h:
 
-SM-Fast_convolution/src/../includes/../../SM-Omp_extra/includes/omp_extra.h:
-
-SM-Fast_convolution/src/../src/FastConvolution.tpp:
+SM-Convolution/src/../src/Convolution_py.tpp:

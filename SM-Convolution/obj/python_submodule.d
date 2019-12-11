@@ -1,8 +1,8 @@
-SM-Fast_convolution/obj/python_submodule.o: \
- SM-Fast_convolution/src/python_submodule.cpp \
- SM-Fast_convolution/src/../includes/python_submodule.h \
- SM-Fast_convolution/src/../includes/../includes/FastConvolution_py.h \
- /cygdrive/C/Users/simon/Desktop/CODES/Time_domain/includes/header_common.h \
+SM-Convolution/obj/python_submodule.o: \
+ SM-Convolution/src/python_submodule.cpp \
+ SM-Convolution/src/../includes/python_submodule.h \
+ SM-Convolution/src/../includes/../includes/Convolution_py.h \
+ SM-Convolution/src/../includes/../includes/../../includes/header_common.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/pybind11.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/attr.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/cast.h \
@@ -80,17 +80,14 @@ SM-Fast_convolution/obj/python_submodule.o: \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/detail/init.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/complex.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/numpy.h \
- SM-Fast_convolution/src/../includes/../includes/../includes/FastConvolution.h \
- includes/../SM-Buffered_arrays/includes/buffered_arrays.h \
- /cygdrive/C/Users/simon/Desktop/CODES/Time_domain/SM-Scoped_timer/includes/scoped_timer.h \
- /cygdrive/C/Users/simon/Desktop/CODES/Time_domain/SM-Omp_extra/includes/omp_extra.h \
- SM-Fast_convolution/src/../includes/../../SM-Buffered_arrays/includes/buffered_arrays_py.h
+ SM-Convolution/src/../includes/../includes/../includes/Convolution.h \
+ /cygdrive/c/Users/simon/Desktop/CODES/Time_domain/SM-Omp_extra/includes/omp_extra.h
 
-SM-Fast_convolution/src/../includes/python_submodule.h:
+SM-Convolution/src/../includes/python_submodule.h:
 
-SM-Fast_convolution/src/../includes/../includes/FastConvolution_py.h:
+SM-Convolution/src/../includes/../includes/Convolution_py.h:
 
-/cygdrive/C/Users/simon/Desktop/CODES/Time_domain/includes/header_common.h:
+SM-Convolution/src/../includes/../includes/../../includes/header_common.h:
 
 C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/pybind11.h:
 
@@ -246,12 +243,6 @@ C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/complex.h:
 
 C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/numpy.h:
 
-SM-Fast_convolution/src/../includes/../includes/../includes/FastConvolution.h:
+SM-Convolution/src/../includes/../includes/../includes/Convolution.h:
 
-includes/../SM-Buffered_arrays/includes/buffered_arrays.h:
-
-/cygdrive/C/Users/simon/Desktop/CODES/Time_domain/SM-Scoped_timer/includes/scoped_timer.h:
-
-/cygdrive/C/Users/simon/Desktop/CODES/Time_domain/SM-Omp_extra/includes/omp_extra.h:
-
-SM-Fast_convolution/src/../includes/../../SM-Buffered_arrays/includes/buffered_arrays_py.h:
+/cygdrive/c/Users/simon/Desktop/CODES/Time_domain/SM-Omp_extra/includes/omp_extra.h:

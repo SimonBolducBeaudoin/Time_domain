@@ -44,7 +44,6 @@ ipython.magic ("timeit hist.hist2dNbits(x, y, n, force_n=False, option='serial_u
 #X, Y = meshgrid(arange(1<<n),arange(1<<n));
 
 
-
 # fig = plt.figure();
 # ax = Axes3D(fig);
 # ax.plot_surface(X,Y,A,cmap='viridis');

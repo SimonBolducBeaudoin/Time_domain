@@ -1,7 +1,6 @@
-SM-Fast_convolution/obj/FastConvolution_py.o: \
- SM-Fast_convolution/src/FastConvolution_py.cpp \
- SM-Fast_convolution/src/../includes/FastConvolution_py.h \
- SM-Fast_convolution/src/../includes/../../includes/header_common.h \
+SM-Convolution/obj/Convolution.o: SM-Convolution/src/Convolution.cpp \
+ SM-Convolution/src/../includes/Convolution.h \
+ SM-Convolution/src/../includes/../../includes/header_common.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/pybind11.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/attr.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/cast.h \
@@ -79,14 +78,12 @@ SM-Fast_convolution/obj/FastConvolution_py.o: \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/detail/init.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/complex.h \
  C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/numpy.h \
- SM-Fast_convolution/src/../includes/../includes/FastConvolution.h \
- includes/../SM-Buffered_arrays/includes/buffered_arrays.h \
- /cygdrive/C/Users/simon/Desktop/CODES/Time_domain/SM-Scoped_timer/includes/scoped_timer.h \
- /cygdrive/C/Users/simon/Desktop/CODES/Time_domain/SM-Omp_extra/includes/omp_extra.h
+ SM-Convolution/src/../includes/../../SM-Omp_extra/includes/omp_extra.h \
+ SM-Convolution/src/../src/Convolution.tpp
 
-SM-Fast_convolution/src/../includes/FastConvolution_py.h:
+SM-Convolution/src/../includes/Convolution.h:
 
-SM-Fast_convolution/src/../includes/../../includes/header_common.h:
+SM-Convolution/src/../includes/../../includes/header_common.h:
 
 C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/pybind11.h:
 
@@ -242,10 +239,6 @@ C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/complex.h:
 
 C:\Users\simon\Anaconda3\envs\Python27\Include/pybind11/numpy.h:
 
-SM-Fast_convolution/src/../includes/../includes/FastConvolution.h:
+SM-Convolution/src/../includes/../../SM-Omp_extra/includes/omp_extra.h:
 
-includes/../SM-Buffered_arrays/includes/buffered_arrays.h:
-
-/cygdrive/C/Users/simon/Desktop/CODES/Time_domain/SM-Scoped_timer/includes/scoped_timer.h:
-
-/cygdrive/C/Users/simon/Desktop/CODES/Time_domain/SM-Omp_extra/includes/omp_extra.h:
+SM-Convolution/src/../src/Convolution.tpp:

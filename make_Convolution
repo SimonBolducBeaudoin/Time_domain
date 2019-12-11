@@ -5,7 +5,7 @@ Scoped_timer = SM-Scoped_timer
 Histograms = SM-Histograms
 OMP_EXTRA = SM-Omp_extra
 Time_quadratures = SM-Time_quadratures
-Fast_convolution = SM-Fast_convolution
+Fast_convolution = SM-Convolution
 Windowing = SM-Windowing
 
 # All the external objects that the current submodule depends on
@@ -13,15 +13,16 @@ Windowing = SM-Windowing
 tempo1 = $(wildcard SM-Buffered_arrays/obj/*.o)
 tempo2 = $(wildcard SM-Scoped_timer/obj/*.o)
 tempo3 = $(wildcard SM-Omp_extra/obj/*.o)
-EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3)
+# EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3)
+EXTERNAL_OBJ = $(tempo3)
 
 # The current submodule directorie
 SUBMOD_DIR = $(Fast_convolution)
 
-TARGET_NAME = fast_convolution
+TARGET_NAME = Convolution
 TARGET_EXT = $(if $(filter $(OS),Windows_NT),.pyd,.so)
 # TARGET = $(SUBMOD_DIR)/$(TARGET_NAME)$(TARGET_EXT)
-TARGET = PY-Test/$(TARGET_NAME)$(TARGET_EXT)
+TARGET = Python/$(TARGET_NAME)$(TARGET_EXT)
 
 # standard subdirectories
 IDIR = includes
