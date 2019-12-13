@@ -1,0 +1,5 @@
+Data aquisition + Quadrature + histogram 2D
+
+log2(l_data) 	n_threads  	 log2(l_fft)  	 [GSa/s] 
+    28 	   	   36	  	 10(default)	   0.20
+    30 	   	   36	  	 10(default)	   0.23

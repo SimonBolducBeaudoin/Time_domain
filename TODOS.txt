@@ -1,0 +1,47 @@
+TODOS : 
+	Test
+		- (13-12-19)  Re-make a histogram benchmark and save it
+		- ()
+
+	Report
+		- (12-12-19) Demonstration on analytical cases
+
+	Python/Tutorial
+		- (12-12-19) Guzik V measurment 
+			+ Done
+		- (12-12-19) Calib Gain routine
+			+ Manual version Done
+		- (12-12-19) Quadrature measurement
+			+ Done
+		- (12-12-19) Quadrature Histograms
+			+ 1D Done
+			+ 2D Done
+		- (12-12-19) Quadrature Histograms with multiple measures
+			+ (13-12-19) Done
+ 		- (13-12-19) Parrallel aquisition//Traitement ( Théo. 1.6 fois plus rapide)
+		
+
+	Moment and Cumulant from histogram
+		- (12-12-19) 
+
+	Histogram class
+		- (12-12-19) properly accomodate int 8 and int16 in 1D and 2D
+		- (12-12-19) abscisse function for python
+			+  Done for double type 
+		- (12-12-19) Add a memory_size function
+		- (13-12-19) BUG : 1D histograms.sum() is not equal to the size of the input
+					double as inputs  
+				   2D seems ok
+
+	time_quadratures class
+		- (12-12-19) Transfert Fresnel Sine and Cos to a special function submodule
+		- (12-12-19) Add a memory_size function 
+
+	Special function submodule
+		- (12-12-19) Create python sumodule library
+
+	Time_domain library
+		- (12-12-19) Make the f***** makefile
+
+
+

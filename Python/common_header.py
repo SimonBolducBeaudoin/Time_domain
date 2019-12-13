@@ -33,7 +33,7 @@ from IPython import get_ipython
 ipython = get_ipython()
 # NUMPY
 from numpy import (array, meshgrid, arange, zeros, ones , array_equal, around
-                   , convolve , int16 , float64 , size , savez, log2
+                   , convolve , uint8 ,int8, uint16 ,int16 , float32 ,float64 , size , savez, log2
                    , array_equal , allclose , sin, cos , tan , exp
                    , sqrt, absolute, sign , pi, concatenate
                    , mean , around , vectorize)
