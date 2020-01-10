@@ -6,7 +6,7 @@ Conceptuals
 			acquisition. Its only going to get worst when adding multiple 
 			numecrical filters.
 	Questions
-		- (16-12-19) What cost the most iun computation time in a 
+		- (16-12-19) What cost the most in computation time in a 
 			aquasition + time_quad (single of multi-kernels) + histograms ? 
 			And what could potentially be reduced ?
 	Ideas ?
@@ -29,20 +29,23 @@ Workflow
 	Python stuff 
 		- Redesign the Python directory ?
 		- Learn pycharm ?
+		- Learn spyder ?
 	Notebook 
 		- Use jupiter to summurized experiements (after or during experiement ?)
 
 	Compiling stuff
 		- Find a more intuitive, more flexible solution to replace gnu-make
 	C++ 
-		- Explicitly write down my directory/file conventions		
+		- Explicitly write down my directory/file conventions
+	gvim 
+		- look it up and test
 
 ############
 In Python
 	Tests
 		- (13-12-19) Re-make a histogram benchmark and save it
-			+ (16-12-19) 1D done and save under Benchmark/Results;
-			+ (16-12-19) 2D (in progress) and save under Benchmark/Results;
+			+ (16-12-19) 1D done and saved under Benchmark/Results;
+			+ (16-12-19) 2D done and saved under Benchmark/Results;
 		- (15-12-19) Benchmark the measure + quad + hist process
 
 	Python/Tutorial
@@ -64,6 +67,8 @@ In Python
             + (13-12-19) Formation avec Ed 
         - (16-12-19) Temperature control looped And monitored in time
             +  (17-12-19) Virtual instrument "temperature_control" is ready to be tested.
+			+  (20-12-19) Virtual instrument is tested and works (not all pyHegel features are working)
+				+	A first calbration for the control in temperature has been done and mesure (see: Experiences)
   
 ############
 In C/C++		
