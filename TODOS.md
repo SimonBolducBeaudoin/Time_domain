@@ -18,6 +18,9 @@ Paperworks
 	Report
 		- (12-12-19) Demonstration on analytical cases
 		- (16-12-19) Revive my latex thesis
+			- (10-01-20) Done
+		- Start theory for lenear amplifier in time
+			- (10-01-20) Done
 		- (16-12-19) Summery of the project ??
 
 ############
