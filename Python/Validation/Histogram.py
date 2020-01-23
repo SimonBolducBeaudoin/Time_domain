@@ -19,11 +19,12 @@ H = Histogram_uint64_t(nofbins = 2**16 , n_threads = 36);
 max = 6*std_dev ; 
 H_abscisse = H.abscisse( max );
 
-
 H.accumulate(x,max);
 
-height = 8;
+## check for run conditions problems in histogram
+print " look for run conditions problems ".format( H.get().sum() == L)
 
+# height = 8;
 # fig = figure()
 # fig.set_size_inches( 1.62*height , height )
 # plot( H_abscisse, H.get() )

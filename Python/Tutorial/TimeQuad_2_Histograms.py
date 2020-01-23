@@ -13,7 +13,7 @@ from Histograms import *
 ## Experiment parameters
     # TimeQuad params
 l_kernel = (1<<8) + 1 ;
-l_data= 1<<24;
+l_data= 1<<30;
 dt = 0.03125 ;
     # Guzik params
 gain_dB = 11.0 ; # Warning : choose this wisely before running

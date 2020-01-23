@@ -118,15 +118,15 @@ height = 8;
 
 # histogram 1D
 
-# fig , axs = subplots( 2,1, sharex = True)
+fig , axs = subplots( 2,1, sharex = True)
 
-# fig.set_size_inches( 1.62*height , height )
-# fig.subplots_adjust(hspace = 0.5 , wspace = 0)
+fig.set_size_inches( 1.62*height , height )
+fig.subplots_adjust(hspace = 0.5 , wspace = 0)
 
-# axs[0].plot( H_abscisse, H_p.get() )
-# axs[0].set(title = "p")
-# axs[1].plot( H_abscisse , H_q.get() )
-# axs[1].set(title = "q")
+axs[0].plot( H_abscisse, H_p.get() )
+axs[0].set(title = "p")
+axs[1].plot( H_abscisse , H_q.get() )
+axs[1].set(title = "q")
 
 # histogram 2D
 

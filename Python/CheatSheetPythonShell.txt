@@ -1,4 +1,13 @@
 import os
 os.chdir('C:\Projets\Time_Domain_Optic\Time_domain\Python\PY-Experiments');
 
+import os
+os.chdir('C:\Projets\Time_Domain_Optic\Time_domain\Python\Tutorial');
+
+import os
+os.chdir('C:\Projets\Time_Domain_Optic\Time_domain\Python');
+
+
+
 gz = instruments.guzik_adp7104()
+

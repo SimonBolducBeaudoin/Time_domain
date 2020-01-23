@@ -2,8 +2,10 @@
 FFT_benchmark = SM-FFT_benchmark
 Buffered_arrays = SM-Buffered_arrays
 Scoped_timer = SM-Scoped_timer
+Moments_cumulants = SM-Moments_cumulants
 Histograms = SM-Histograms
 OMP_EXTRA = SM-Omp_extra
+MATH_EXTRA = SM-Math_extra
 Time_quadratures = SM-Time_quadratures
 Fast_convolution = SM-Fast_convolution
 Windowing = SM-Windowing
@@ -15,7 +17,9 @@ Numerical_integration = SM-Numerical_integration
 tempo1 = $(wildcard SM-Buffered_arrays/obj/*.o)
 tempo2 = $(wildcard SM-Scoped_timer/obj/*.o)
 tempo3 = $(wildcard SM-Omp_extra/obj/*.o)
-EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3)
+tempo4 = $(wildcard SM-Moments_cumulants/obj/*.o)
+tempo5 = $(wildcard SM-Math_extra/*.o)
+EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3) $(tempo4) $(tempo5)
 
 # The current submodule directorie
 SUBMOD_DIR = $(Histograms)
