@@ -23,6 +23,32 @@
         - (16-01-20) opened
         - () writing theory on multivariate cumulants 
     - (16-12-19) Summery of the project ?
+- Oral presentation
+    - (23-01-20) Group meeting 14 fev
+        + Start with narrow bandwidth relations for quadratures
+        + Then Reulet transforms
+            + Define second quantization basis
+            + Example in frequency representation
+            + Example in time and wavelets representation
+            + Link between \hat[a] , \hat[v], \hat[X]_{Theta} continuum rep.
+        + Demo for black body statistics in wavelets rep.
+        + How to get this statistic experimentally
+            + Microwave experiment
+                + Cumulant properties
+                + Monovariate cumulant
+                    + up to 4th order
+                + Bivariate cumulant
+                + Application on the black body experiment
+                    + Setup
+            + Optic experiment
+                + Measurment directly in Fock basis
+                + Narrow bandwidth
+                + Setup ?
+        + Measure of state representable in 2nd quantification basis
+            + Large bandwidth squeezed state
+            + Finding the maximaly squeezed basis
+            + Proposition of approach ?
+        + Other state ?
 
 ## Workflow
 - Git stuff
@@ -48,45 +74,72 @@
     - Is there a for of mardown that would help to organize c++ text file and python text file ?
 
 ## Python
-- Tests
-    - (13-12-19) Re-make a histogram benchmark and save it
-        + (16-12-19) 1D done and saved under Benchmark/Results;
-        + (16-12-19) 2D done and saved under Benchmark/Results;
-    - (15-12-19) Benchmark the measure + quad + hist process
-    - (13-01-20) moment_k_float centered_moment_k_float and cumulant_k in Python
-        + Validated up to 3rd order using numpy.random.normal
-- Python/Tutorial
-    - (12-12-19) Guzik V measurment 
-        + Done
-    - (12-12-19) Calib Gain routine
-        + Manual version Done
-    - (12-12-19) Quadrature measurement
-        + Done
-    - (12-12-19) Quadrature Histograms
-        + 1D Done
-        + 2D Done
-    - (12-12-19) Quadrature Histograms with multiple measures
-        + (13-12-19) Done
-    - (13-12-19) Parrallel aquisition//Traitement 
-            using python threads ( Théo. 
-            ~1.6 fois plus rapide)
-    - (16-12-19) Temperature control
-        + (13-12-19) Formation avec Ed 
-    - (16-12-19) Temperature control looped And monitored in time
-        +  (17-12-19) Virtual instrument "temperature_control" is ready to be tested.
-        +  (20-12-19) Virtual instrument is tested and works (not all pyHegel features are working)
-            +	A first calbration for the control in temperature has been done and mesure (see: Experiences)
-        +  (10-01-20) Virtual instrument class called "lakeshore_370_logical" is ready
-            ++ Tested for 7 to 200 mK. 
-            ++ Auto stabilization
-            ++ Tables : temperature_range, heater_range , PID, etc... are tested but could be calibrated furthermore
 
-## C/C++		
-- Moment and Cumulant from histogram
-    - (12-12-19) Make it work
-    - (13-01-20) Created SM-Math_extra and SM-Moment_cumulants
-    - (13-01-20) Added moment_k and cumulant_k member function to Histogram and their Pybind11 wrapper
-        + single variable histogram (DONE and validated)
+### Proof of concept
+
+### Validations
+- moment_k_float centered_moment_k_float and cumulant_k in Python
+    + (13-01-20) OPENED
+    + For Histogram1D
+    + Validated up to 3rd order using numpy.random.normal
+    + (13-01-20) CLOSED
+
+### Benchmarks
+- Re-make a histogram benchmark and save it
+    * (13-12-19) OPENED
+    + (16-12-19) 1D done and saved under Benchmark/Results;
+    + (16-12-19) 2D done and saved under Benchmark/Results;
+    * (16-12-19) CLOSED
+- (15-12-19) Benchmark the measure + quad + hist process
+
+### Routines
+- Guzik V measurment 
+    + (12-12-19) DONE
+- Calib Gain routine
+    + (12-12-19) Manual version DONE
+- Quadrature measurement
+    + (12-12-19) DONE
+- Quadrature Histograms
+    * (12-12-19) OPENED
+    + 1D
+    + 2D
+    * (12-12-19) CLOSED 
+- Quadrature Histograms with multiple measures
+    * (12-12-19) OPENED
+    * (13-12-19) CLOSED
+- Parrallel aquisition//Traitement
+    * (13-12-19) OPENED
+    + using python threads ( Théo. ~1.6 fois plus rapide)
+- Temperature control
+    * (16-12-19) OPENED
+    + (13-12-19) Formation avec Ed
+    + Using class inheritance from pyHegel's existing Lakeshore370
+    + (20-12-19) Test Virtual instrument "temperature_control"
+    + Proper PyHegel inherintance DONE
+    + Round of test to calibrate tables
+        + (20-12-19) Round 1 Done
+        + (10-01-20) Round 2
+            ++ Tested for 7 to 200 mK. 
+            ++ Tables : temperature_range, heater_range , PID, etc... are tested but could be calibrated furthermore
+    + Auto stabilization (10-01-20)       
+    * CLOSED
+    * BUG
+    + At object creation :""
+    + At object destruction :""
+    * TODOS
+    + Change class name to "lakeshore_370_logical"
+    + Change method name to table_set_and_get
+    + Add monitor option for live assesment
+    + Calibrate up to 800 mk
+
+### Experiments
+
+## C/C++
+- Math_extra
+    - (13-01-20)Created
+- Moment_cumulants
+    - (13-01-20)Created
+    - TASK_01 Adding bivariate case to SM-Moments_cumulants (OPENED)
 - Histogram class
     - (12-12-19) properly accomodate int 8 and int16 in 1D and 2D
     - (12-12-19) abscisse function for python
@@ -99,6 +152,8 @@
                             called by the child thread the member attribute will be called instead of the copy made for the thread. 
                             This can lead to race conditions in the code.
         + (16-01-20) This bug was supposed to be fixed but it wasn't now it should be fixed.
+    - (13-01-20) Pybind11 wrapper for 1D moment_k and cumulant
+    - TASK_02 Adding first order moment and cumulant to 2D histograms (OPENED)
 - time_quadratures class
     - (12-12-19) Transfert Fresnel Sine and Cos to a special function submodule
     - (12-12-19) Add a memory_size function 
@@ -117,6 +172,41 @@
     - (16-12-19) Minimiser le coût associer à l'utilisation de plusieur kernels et filtres.
 - Time_domain library
     - (12-12-19) Make the makefile
+
+
+# Lab book
+
+## 24-01-20
+
+TASK_01 Adding bivariate case to SM-Moments_cumulants
+
+TASK_02 Adding first order moment and cumulant to 2D histograms
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
