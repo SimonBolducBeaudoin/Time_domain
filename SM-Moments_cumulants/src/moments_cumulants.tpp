@@ -78,3 +78,67 @@ double cumulant_k(BinType* histogram, uint64_t nofbins, uint n, double bin_centr
     }
     return ret;
 }
+
+//////////////////////////////////
+// Multivariate 
+//////////////////////////////////
+
+template <class BinType>
+double moment2D(BinType* histogram, uint64_t nofbins, uint exp_x , uint exp_y , double bin_centre, double bin_width)
+{
+    long double bin_value = 0;
+    long double val = 0;
+    uint64_t n=0;
+    
+    #pragma omp parallel
+    {
+        manage_thread_affinity(); // For 64+ logical cores on Windows
+        #pragma omp for reduction(+:val), reduction(+:n)
+        for (uint64_t i=0; i<nofbins; i++)
+        {
+            bin_value_x = (long double)(bin_width*(i%nofbins)) + (long double)bin_centre ;
+            bin_value_y = (long double)(bin_width*(i/nofbins)) + (long double)bin_centre ;
+            val += (long double)histogram[i] * powl( bin_value_x , exp_x) * powl( bin_value_y , exp_y)
+            n += histogram[i];
+        }
+    }
+    
+    return (double)(val/(long double)n);
+}
+
+
+#define INPUTS(EXP_X,EXP_Y) histogram, nofbins, EXP_X , EXP_Y , bin_centre, bin_width 
+template <class BinType>
+double cumulant_rr(BinType* histogram, uint64_t nofbins, double bin_centre, double bin_width)
+{
+   
+    return moment2D(INPUTS(2,0)) - pow(  moment2D(INPUTS(1,0)) ,2 );
+    
+}
+
+template <class BinType>
+double cumulant_ss(BinType* histogram, uint64_t nofbins, double bin_centre, double bin_width)
+{
+    
+    return moment2D(INPUTS(0,2)) - pow( moment2D(INPUTS(0,1)) , 2 );
+    
+}
+
+template <class BinType>
+double cumulant_rrss(BinType* histogram, uint64_t nofbins, double bin_centre, double bin_width)
+{
+    
+    return moment2D( INPUTS(2,2) ) -  moment2D( INPUTS(2,0) ) * moment2D( INPUTS(0,2) ) - 2.0* pow( moment2D(INPUTS(1,1)) , 2 );
+    
+}
+#undef INPUTS
+
+
+
+
+
+
+
+
+
+
