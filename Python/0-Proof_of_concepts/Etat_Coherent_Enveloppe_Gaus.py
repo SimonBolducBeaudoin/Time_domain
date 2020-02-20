@@ -57,7 +57,6 @@ axs[3].set(title = "Photon flux ")
 axs[3].set_xlabel(" t [ns]")
 
 
-
 # figure(1)
 # plot(NoyauP, '-+')
 # plot(NoyauQ, '-+')

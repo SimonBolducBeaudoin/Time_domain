@@ -19,7 +19,7 @@
 
 #define _USE_MATH_DEFINES
 #define PI M_PI
-#include<math.h>
+#include<cmath>
 #include<tuple>
 
 // #include<memory>
@@ -29,9 +29,14 @@
 #include <pybind11/numpy.h>
 namespace py = pybind11;
 using namespace pybind11::literals;
+
 typedef std::complex<float> complex_f;
 typedef std::complex<double> complex_d;
+
 typedef unsigned int uint;
+
+typedef py::array_t<double,py::array::c_style> np_double;
+typedef py::array_t<complex_d,py::array::c_style> np_complex_d;
 
 
 #include <fftw3.h>
@@ -41,6 +46,7 @@ typedef unsigned int uint;
 //#include <iomanip>
 
 #include <omp.h>
+#include<thread>
 //#include <ctime>
 //#include <limits>
 

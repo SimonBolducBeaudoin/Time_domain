@@ -27,6 +27,9 @@ void manage_thread_affinity()
         
         result = SetThreadGroupAffinity(thandle, &group, NULL); // Actually setting the affinity
         if(!result) fprintf(stderr, "Failed setting output for tid=%i\n", tid);
+		//// SBB 2/3/2020
+		free(threads_per_groups);
+		////
     #else
         //We let openmp and the OS manage the threads themselves
     #endif
@@ -60,3 +63,10 @@ void reduce( BinType** arrs, uint64_t bins, uint64_t begin, uint64_t end)
 // see: https://en.cppreference.com/w/cpp/language/function_template
 template void reduce( uint64_t** arrs, uint64_t bins, uint64_t begin, uint64_t end);
 template void reduce( uint8_t** arrs, uint64_t bins, uint64_t begin, uint64_t end);
+
+
+int physical_n_threads()
+{ 
+	return std::thread::hardware_concurrency(); 
+}
+

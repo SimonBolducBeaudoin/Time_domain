@@ -53,6 +53,7 @@
 ## Workflow
 - Git stuff
     - (16-12-19) Find how to properly update my project without always having the "detached-HEAD" bug.
+	 + Stop using git submodules 
     - Automate git commits (and push ?) before making actual measurments ?
     - Git doesn't distinguish between Caption.txt and caption.txt (it anoying)
 - Python stuff
@@ -135,11 +136,13 @@
 ### Experiments
 
 ## C/C++
+- Omp_extra
+	- (28-01-20) Add a function that can be called to check if the user asks for more threads
+		then are possibly available and gives the max amount of threads when it aksed to much.
 - Math_extra
     - (13-01-20)Created
 - Moment_cumulants
-    - (13-01-20)Created
-    - TASK_01 Adding bivariate case to SM-Moments_cumulants (OPENED)
+    - TASK_01 Adding bivariate case to SM-Moments_cumulants
 - Histogram class
     - (12-12-19) properly accomodate int 8 and int16 in 1D and 2D
     - (12-12-19) abscisse function for python
@@ -154,14 +157,17 @@
         + (16-01-20) This bug was supposed to be fixed but it wasn't now it should be fixed.
     - (13-01-20) Pybind11 wrapper for 1D moment_k and cumulant
     - TASK_02 Adding first order moment and cumulant to 2D histograms (OPENED)
+	- (28-01-20) Return an error message when user tries to make 2D hitogram with nofbins bigger than 2**12
+	- Optimize to minimize for cache misses
+		
 - time_quadratures class
     - (12-12-19) Transfert Fresnel Sine and Cos to a special function submodule
     - (12-12-19) Add a memory_size function 
     - (16-12-19) Convert time_quadrature class into python callable function and
             create SM-Blackbody which will contain a combined code 
             specialized for the blackbody experiment.
+	- (28-01-20) Add custom filter inputs 
 - Special function submodule
-    - (12-12-19) Create python sumodule library for special functions
     - (16-12-19) Fonction de filtrage réelle et gaussienne (autre forme ?) autour 
             deux ou trois fréquences.
 - Blackbody submodule
@@ -170,18 +176,27 @@
             sont calculées.
     - (16-12-19) Pré-calculer les kernels pour plusieurs filtres numériques.
     - (16-12-19) Minimiser le coût associer à l'utilisation de plusieur kernels et filtres.
+- Multi_array submodule
+	-
 - Time_domain library
     - (12-12-19) Make the makefile
-
 
 # Lab book
 
 ## 24-01-20
 
 TASK_01 Adding bivariate case to SM-Moments_cumulants
+- General bivariate moments implemented DONE(28-01-20)
+- Only cumulant  c_ii c_jj c_iijj implemented DONE(28-01-20)
 
 TASK_02 Adding first order moment and cumulant to 2D histograms
+- Pybind11 wrapper working (see TASK_01) DONE(28-01-20)
+- Validation/Moments_cumulants_2.py creatre
+	- monovariate moments of 2D histograms were validated with scipy.stat.moment
 
+## 10-02-20
+- Only l_data, l_valid, l_full and bin depth of 1D histograms should be uint64_t other should be uint
+- 
 
 
 

@@ -1,0 +1,38 @@
+From : https://stackoverflow.com/questions/2849832/c-c-line-number
+printf("line number %d in file %s\n", __LINE__, __FILE__);
+
+
+run time polymorphism.
+	See :
+		- https://www.geeksforgeeks.org/polymorphism-in-c/
+		- https://www.geeksforgeeks.org/virtual-function-cpp/
+	Warning dont mixz with templates
+
+Named Constructor Idiom
+	http://www.cs.technion.ac.il/users/yechiel/c++-faq/named-ctor-idiom.html
+	
+Aligned memory on windows
+	https://docs.microsoft.com/en-us/cpp/c-runtime-library/data-alignment?view=vs-2019
+
+Returning arrays with pybind11
+	https://stackoverflow.com/questions/44659924/returning-numpy-arrays-via-pybind11
+
+Multi_array overloading() operator
+	How do I create a subscript operator for a Matrix class?
+	Why shouldn’t my Matrix class’s interface look like an array-of-array?
+	https://isocpp.org/wiki/faq/operator-overloading#matrix-subscript-op
+
+Pybind11 FAQ «How can I reduce the build time ?» :
+	https://pybind11.readthedocs.io/en/stable/faq.html#how-can-i-reduce-the-build-time
+
+Pybind11 returning numpy arrays
+	https://stackoverflow.com/questions/44659924/returning-numpy-arrays-via-pybind11
+
+pybind11 return numpy array without copy
+	https://github.com/pybind/pybind11/issues/1042
+
+Tempalte may not be virtual
+	https://stackoverflow.com/questions/4961909/templates-may-not-be-virtual 
+
+Const class and members
+	https://en.cppreference.com/w/cpp/language/member_functions#const-_and_volatile-qualified_member_functions

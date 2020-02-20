@@ -7,6 +7,9 @@ os.chdir('C:\Projets\Time_Domain_Optic\Time_domain\Python\Tutorial');
 import os
 os.chdir('C:\Projets\Time_Domain_Optic\Time_domain\Python');
 
+import os
+os.chdir('C:\Users\simon\Desktop\CODES\Time_domain\Python');
+
 
 
 gz = instruments.guzik_adp7104()

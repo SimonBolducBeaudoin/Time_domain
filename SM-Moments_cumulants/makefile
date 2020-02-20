@@ -2,13 +2,15 @@
 FFT_benchmark = SM-FFT_benchmark
 Buffered_arrays = SM-Buffered_arrays
 Scoped_timer = SM-Scoped_timer
+Moments_cumulants = SM-Moments_cumulants
 Histograms = SM-Histograms
 OMP_EXTRA = SM-Omp_extra
-MATH_EXTRA = SM-MATH_extra
-Moments_cumulants = SM-Moments_cumulants
+MATH_EXTRA = SM-Math_extra
 Time_quadratures = SM-Time_quadratures
-Fast_convolution = SM-Convolution
+Fast_convolution = SM-Fast_convolution
 Windowing = SM-Windowing
+Special_functions = SM-Special_functions
+Numerical_integration = SM-Numerical_integration
 
 # standard subdirectories
 IDIR = includes
@@ -44,14 +46,14 @@ SHRFLAGS = -fPIC -shared
 # Python directories
 PY = $(OS:Windows_NT=/c/Anaconda2/)python
 ifeq ($(USERNAME),simon)
-    PY = $(OS:Windows_NT=/cygdrive/c/Users/simon/Anaconda3/envs/Python27/)python
+    PY = $(OS:Windows_NT=/cygdrive/c/Anaconda2/)python
 endif
 ifeq ($(USERNAME),Sous-sol)
     PY = $(OS:Windows_NT=/cygdrive/c/ProgramData/Anaconda2/)python
 endif
 
 # includes
-PYINCL = `$(PY) -m pybind11 --includes`
+PYINCL := $(shell $(PY) -m pybind11 --includes)
 ifneq ($(OS),Windows_NT)
     PYINCL += -I /usr/include/python2.7/
 endif
@@ -59,7 +61,7 @@ endif
 # libraries
 LDLIBS = $(OS:Windows_NT=-L /c/Anaconda2/libs/ -l python27) $(PYINCL)
 ifeq ($(USERNAME),simon)
-    LDLIBS = $(OS:Windows_NT=-L /cygdrive/c/Users/simon/Anaconda3/envs/Python27/libs/ -l python27) $(PYINCL) 
+    LDLIBS = $(OS:Windows_NT=-L /cygdrive/c/Anaconda2/libs/ -l python27) $(PYINCL)
 endif
 ifeq ($(USERNAME),Sous-sol)
     LDLIBS = $(OS:Windows_NT=-L /cygdrive/c/ProgramData/Anaconda2/libs/ -l python27) $(PYINCL) 
