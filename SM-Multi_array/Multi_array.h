@@ -16,13 +16,7 @@ typedef unsigned int uint;
 void* _128bit_aligned_malloc( size_t size );
 
 
-/////// FUTURE IDEA
-	// Add a constructor with custom strides values to account for cases : 
-	// Multi_array<complex_d,2>(n, L//2 + 1 )
-	// 	Stride are ( n*-> , (L//2 + 1) *(128) )
-	// Multi_array<double,2>(n, L ) // 8 bytes less per line
-	// 	Keep the same strides but reinterpretcast each line
-	
+/////// IDEA
 	// Add a macro that can be turned on and off that checks if called indexes are out of bounds.
 
 
@@ -49,36 +43,25 @@ class Multi_array<Type,1>
 	Multi_array 
 	(
 		uint n_i , // Number of elements in i
+		size_t stride_i = sizeof(Type) , // The number of Bytes of one element 
 		void* (*alloc_func)(size_t size) = &_128bit_aligned_malloc, // Custom allocation function 
 		void (*free_func)(void* ptr) = &_aligned_free
 	);
 	
 	/* Constructing from an existing pointer */
-	Multi_array ( Type* prt, uint n_i );
+	Multi_array ( Type* prt, uint n_i , size_t stride_i = sizeof(Type) );
 	
 	/* Constructing from a 1D Numpy array */
 	static Multi_array numpy( py::array_t<Type,py::array::c_style> np_array );
 	
 	/* Copy constructor */
-	Multi_array( Multi_array& Mom)
-	:
-		alloc_func(NULL), /* No memory manegement allowed */
-		free_func(NULL),
-		ptr(Mom.ptr),
-		n_i(Mom.n_i),
-		stride_i(sizeof(Type))
-	{};
-	
-	Multi_array(const Multi_array& Mom)
-	:
-		alloc_func(NULL), /* No memory manegement allowed */
-		free_func(NULL),
-		ptr(Mom.ptr),
-		n_i(Mom.n_i),
-		stride_i(sizeof(Type))
-	{};
+	Multi_array( Multi_array& Mom);
+	Multi_array(const Multi_array& Mom);
 	
 	~Multi_array();
+	
+	char* displace( uint n_Bytes );
+	char* displace( uint n_Bytes ) const;
 	
 	Type& operator()( uint i ); /* Returns a reference to an element */
 	Type& operator[]( uint i ); /* Returns a reference to an element */
@@ -96,24 +79,25 @@ class Multi_array<Type,1>
 	py::array_t<Type, py::array::c_style> get_py_no_copy();
 	
 	uint get_n_i(){return n_i;};
+	size_t get_stride_i(){return stride_i;};
 	
 	private :
 	void* (*alloc_func)(size_t size) ;
 	void (*free_func)(void* ptr) ;
 	
 	Type* ptr ;
-	const uint  n_i ;
+	uint  n_i ;
 	size_t stride_i ;
 	
 	void _free_func();
 	
 };
-
+////////////////////////////////////////////////////
 template<class Type>
 class Multi_array<Type,2>
 {
 	public :
-	
+	/* with default strides */
 	Multi_array
 	( 
 		uint n_j , // Number of elements in j
@@ -121,44 +105,45 @@ class Multi_array<Type,2>
 		void* (*alloc_func)(size_t size) = &_128bit_aligned_malloc, // Custom allocation function 
 		void (*free_func)(void* ptr) = &_aligned_free
 	);
+	/* declaring strides */
+	Multi_array
+	( 
+		uint n_j , // Number of elements in j
+		uint n_i , // Number of elements in i
+		size_t stride_j , // The number of Bytes of complete row of elements
+		size_t stride_i = sizeof(Type) , // The number of Bytes of one element
+		void* (*alloc_func)(size_t size) = &_128bit_aligned_malloc, // Custom allocation function 
+		void (*free_func)(void* ptr) = &_aligned_free
+	);
 	
-	/* Constructing from an existing pointer */
+	/* 	Constructing from an existing pointer with default strides */
 	Multi_array
 	(
-		Type* prt,
-		uint n_j,
-		uint n_i
+		Type* prt ,
+		uint n_j ,
+		uint n_i 
+	);
+	/* 	Constructing from an existing pointer declaring strides */
+	Multi_array
+	(
+		Type* prt ,
+		uint n_j ,
+		uint n_i ,
+		size_t stride_j , // The number of Bytes of complete row of elements
+		size_t stride_i = sizeof(Type) // The number of Bytes of one element
 	);
 	
 	/* Constructing from a 2D Numpy array */
 	static Multi_array numpy( py::array_t<Type,py::array::c_style> np_array );
 	
-	/* Copy constructor */
-	Multi_array( Multi_array& Mom)
-	:
-		alloc_func(NULL), /* No memory manegement allowed */
-		free_func(NULL),
-		ptr(Mom.ptr),
-		n_j(Mom.n_j), n_i(Mom.n_i),
-		stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type)),
-		steps_j(n_i)
-	{
-		printf("line number %d in file %s\n", __LINE__, __FILE__);
-	};
-	
-	Multi_array(const Multi_array& Mom)
-	:
-		alloc_func(NULL), /* No memory manegement allowed */
-		free_func(NULL),
-		ptr(Mom.ptr),
-		n_j(Mom.n_j), n_i(Mom.n_i),
-		stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type)),
-		steps_j(n_i)
-	{
-		printf("line number %d in file %s\n", __LINE__, __FILE__);
-	};
+	/* Copy constructors */
+	Multi_array( Multi_array& Mom );
+	Multi_array(const Multi_array& Mom);
 	
 	~Multi_array();
+	
+	char* displace( uint n_Bytes );
+	char* displace( uint n_Bytes ) const;
 	
 	Type& operator()( uint j , uint i ); /* Returns a reference to an element */
 	Type* operator()( uint j ) ; /* Returns a pointer to a row */ 
@@ -173,30 +158,31 @@ class Multi_array<Type,2>
 	py::array_t<Type, py::array::c_style> get_py_copy();
 	py::array_t<Type, py::array::c_style> get_py_no_copy();
 	
-	uint get_n_i(){return n_i;};
 	uint get_n_j(){return n_j;};
+	uint get_n_i(){return n_i;};
+	size_t get_stride_j(){return stride_j;};
+	size_t get_stride_i(){return stride_i;};
 	
 	private :
 	void* (*alloc_func)(size_t size) ;
 	void (*free_func)(void* ptr) ;
 	
 	Type* ptr ;
-	const uint n_j ;
-	const uint n_i ;
+	uint n_j ;
+	uint n_i ;
 	
 	size_t stride_j ;
 	size_t stride_i ;
 	
-	uint steps_j ; /* Has the same meaning as stride/siseof(Type) */
-	
 	void _free_func();
 };
-
+//////////////////////////////////////////////////
 template<class Type>
 class Multi_array<Type,3>
 {
 	public :
-	Multi_array
+	/* with default strides */
+	Multi_array 
 	( 
 		uint n_k , // Number of elements in k
 		uint n_j , // Number of elements in j
@@ -204,45 +190,44 @@ class Multi_array<Type,3>
 		void* (*alloc_func)(size_t size) = &_128bit_aligned_malloc, // Custom allocation function 
 		void (*free_func)(void* ptr) = &_aligned_free
 	);
-	
-	/* Constructing from an existing pointer */
+	/* declaring strides */
 	Multi_array
+	( 
+		uint n_k , // Number of elements in k
+		uint n_j , // Number of elements in j
+		uint n_i , // Number of elements in i
+		size_t stride_k , // The number of Bytes of n_i*n_j elements
+		size_t stride_j , // The number of Bytes of a complete row of elements
+		size_t stride_i = sizeof(Type) , // The number of Bytes of one element
+		void* (*alloc_func)(size_t size) = &_128bit_aligned_malloc, // Custom allocation function 
+		void (*free_func)(void* ptr) = &_aligned_free
+	);
+	
+	/* 	Constructing from an existing pointer with default strides */
+	Multi_array ( Type* prt, uint n_k , uint n_j , uint n_i );
+	/* 	Constructing from an existing pointer declaring strides */
+	Multi_array 
 	(
-		Type* prt,
-		uint n_k,
-		uint n_j,
-		uint n_i
+		Type* prt ,
+		uint n_k ,
+		uint n_j ,
+		uint n_i ,
+		size_t stride_k , // The number of Bytes of n_i*n_j elements
+		size_t stride_j , // The number of Bytes of complete row of elements
+		size_t stride_i = sizeof(Type) // The number of Bytes of one element
 	);
 	
 	/* Constructing from a 3D Numpy array */
 	static Multi_array numpy( py::array_t<Type,py::array::c_style> np_array );
 	
 	/* Copy constructor */
-	Multi_array( Multi_array& Mom)
-	:
-		alloc_func(NULL), /* No memory manegement allowed */
-		free_func(NULL),
-		ptr(Mom.ptr),
-		n_k(Mom.n_k) , n_j(Mom.n_j) , n_i(Mom.n_i),
-		stride_k(n_j*n_i*sizeof(Type)) , stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type)),
-		steps_k(n_j*n_i) , steps_j(n_i)
-	{
-		printf("line number %d in file %s\n", __LINE__, __FILE__);
-	};
-	
-	Multi_array(const Multi_array& Mom)
-	:
-		alloc_func(NULL), /* No memory manegement allowed */
-		free_func(NULL),
-		ptr(Mom.ptr),
-		n_k(Mom.n_k) , n_j(Mom.n_j) , n_i(Mom.n_i),
-		stride_k(n_j*n_i*sizeof(Type)) , stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type)),
-		steps_k(n_j*n_i) , steps_j(n_i)
-	{
-		printf("line number %d in file %s\n", __LINE__, __FILE__);
-	};
+	Multi_array( Multi_array& Mom);
+	Multi_array(const Multi_array& Mom);
 	
 	~Multi_array();
+	
+	char* displace( uint n_Bytes );
+	char* displace( uint n_Bytes ) const;
 	
 	Type& operator()( uint k , uint j , uint i ); /* Returns a reference to an element */
 	Type* operator()( uint k , uint j  ); /* Returns a pointer to kj'th row */
@@ -268,16 +253,13 @@ class Multi_array<Type,3>
 	void (*free_func)(void* ptr) ;
 	
 	Type* ptr ;
-	const uint n_k ; 
-	const uint n_j ;
-	const uint n_i ;
+	uint n_k ; 
+	uint n_j ;
+	uint n_i ;
 	
 	size_t stride_k ;
 	size_t stride_j ;
 	size_t stride_i ;
-	
-	uint steps_k ; /* Has the same meaning as stride/siseof(Type) */
-	uint steps_j ;
 	
 	void _free_func();
 };

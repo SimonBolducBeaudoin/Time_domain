@@ -36,31 +36,31 @@ template<class Type>
 Multi_array<Type,1>::Multi_array
 ( 
 	uint n_i , // Number of elements in i
+	size_t stride_i , // The number of Bytes of one element 
 	void* (*alloc_func)(size_t size) , // Custom allocation function 
 	void (*free_func)(void* ptr)
 )
 : 
 	alloc_func(alloc_func) , 
 	free_func(free_func) , 
-	ptr( (Type*)alloc_func(n_i*sizeof(Type)) ),
+	ptr( (Type*)alloc_func(n_i*stride_i) ),
 	n_i(n_i),
-	stride_i(sizeof(Type))
+	stride_i(stride_i)
 {};
 
 template<class Type>
-Multi_array<Type,1>::Multi_array( Type* ptr , uint n_i )
+Multi_array<Type,1>::Multi_array( Type* ptr , uint n_i , size_t stride_i)
 :
 	alloc_func(NULL), /* No memory manegement allowed */
 	free_func(NULL),
 	ptr(ptr),
 	n_i(n_i),
-	stride_i(sizeof(Type))
+	stride_i(stride_i)
 {};
 
 template<class Type>
 Multi_array<Type,1> Multi_array<Type,1>::numpy( py::array_t<Type, py::array::c_style> np_array )
 {
-	
 	py::buffer_info buffer = np_array.request() ;
 	
 	if (buffer.ndim != 1) 
@@ -68,11 +68,31 @@ Multi_array<Type,1> Multi_array<Type,1>::numpy( py::array_t<Type, py::array::c_s
 		throw std::runtime_error("Number of dimensions must be one");
 	}
 	
-	return Multi_array<Type,1>( (Type*)buffer.ptr , buffer.shape[0] );
+	return Multi_array<Type,1>( (Type*)buffer.ptr , buffer.shape[0] , buffer.strides[0] );
 };
 
+/* Copy constructor */
+template<class Type>
+Multi_array<Type,1>::Multi_array( Multi_array& Mom)
+:
+	alloc_func(NULL), /* No memory manegement allowed */
+	free_func(NULL),
+	ptr(Mom.ptr),
+	n_i(Mom.n_i),
+	stride_i(Mom.stride_i)
+{};
 
+template<class Type>
+Multi_array<Type,1>::Multi_array(const Multi_array& Mom)
+:
+	alloc_func(NULL), /* No memory manegement allowed */
+	free_func(NULL),
+	ptr(Mom.ptr),
+	n_i(Mom.n_i),
+	stride_i(Mom.stride_i)
+{};
 
+// Destructor
 template<class Type>
 Multi_array<Type,1>::~Multi_array()
 {
@@ -88,17 +108,41 @@ void Multi_array<Type,1>::_free_func()
 	ptr = NULL ;	
 };
 
+template<class Type>
+inline char* Multi_array<Type,1>::displace( uint n_Bytes )
+{
+	return ((char*)ptr) + n_Bytes ;
+};
+
+template<class Type>
+inline char* Multi_array<Type,1>::displace( uint n_Bytes ) const
+{
+	return ((char*)ptr) + n_Bytes ;
+};
+
 // OPERATOR OVERLOAD
 template<class Type>
 inline Type& Multi_array<Type,1>::operator()( uint i )
 {
-	return ptr[i] ;
+	return  *( (Type*)displace( stride_i*i ) ) ;
 };
 
 template<class Type>
 inline Type& Multi_array<Type,1>::operator()( uint i ) const
 {
-	return ptr[i] ;
+	return *( (Type*)displace( stride_i*i ) ) ;
+};
+
+template<class Type>
+inline Type& Multi_array<Type,1>::operator[]( uint i )
+{
+	return  *( (Type*)displace( stride_i*i ) ) ;
+};
+
+template<class Type>
+inline Type& Multi_array<Type,1>::operator[]( uint i ) const
+{
+	return *( (Type*)displace( stride_i*i ) ) ;
 };
 ////
 
@@ -107,8 +151,6 @@ inline Type* Multi_array<Type,1>::get()
 {
 	return ptr ;
 };
-
-
 
 template<class Type>
 py::array_t<Type, py::array::c_style> Multi_array<Type,1>::get_py_copy()
@@ -137,7 +179,8 @@ py::array_t<Type, py::array::c_style> Multi_array<Type,1>::get_py_no_copy()
 		free_dummy // numpy array references this parent
 	);
 };
-
+////////////////////////////////////
+/* with default strides */
 template<class Type>
 Multi_array<Type,2>::Multi_array
 ( 
@@ -151,10 +194,27 @@ Multi_array<Type,2>::Multi_array
 	free_func(free_func) , 
 	ptr( (Type*)alloc_func( n_j*n_i*sizeof(Type)) ),
 	n_j(n_j) , n_i(n_i),
-	stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type)),
-	steps_j(n_i)
+	stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type))
 {};
-	
+/* declaring strides */
+template<class Type>
+Multi_array<Type,2>::Multi_array
+( 
+	uint n_j , // Number of elements in j
+	uint n_i , // Number of elements in i
+	size_t stride_j , // The number of Bytes of complete row of elements
+	size_t stride_i , // The number of Bytes of one element
+	void* (*alloc_func)(size_t size) , // Custom allocation function 
+	void (*free_func)(void* ptr)
+)
+: 
+	alloc_func(alloc_func) , 
+	free_func(free_func) , 
+	ptr( (Type*)alloc_func( n_j*stride_j ) ),
+	n_j(n_j) , n_i(n_i),
+	stride_j(stride_j) , stride_i(stride_i)
+{};
+/* 	Constructing from an existing pointer with default strides */	
 template<class Type>
 Multi_array<Type,2>::Multi_array( Type* ptr , uint n_j , uint n_i )
 :
@@ -162,10 +222,26 @@ Multi_array<Type,2>::Multi_array( Type* ptr , uint n_j , uint n_i )
 	free_func(NULL),
 	ptr(ptr),
 	n_j(n_j), n_i(n_i),
-	stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type)),
-	steps_j(n_i)
+	stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type))
 {};
-
+/* 	Constructing from an existing pointer declaring strides */
+template<class Type>
+Multi_array<Type,2>::Multi_array
+( 
+	Type* ptr , 
+	uint n_j , 
+	uint n_i , 
+	size_t stride_j , 
+	size_t stride_i 
+)
+:
+	alloc_func(NULL), /* No memory manegement allowed */
+	free_func(NULL),
+	ptr(ptr),
+	n_j(n_j), n_i(n_i),
+	stride_j(stride_j) , stride_i(stride_i)
+{};
+/* Constructing from a 2D Numpy array */
 template<class Type>
 Multi_array<Type,2> Multi_array<Type,2>::numpy( py::array_t<Type, py::array::c_style> np_array )
 {
@@ -175,9 +251,31 @@ Multi_array<Type,2> Multi_array<Type,2>::numpy( py::array_t<Type, py::array::c_s
     {
 		throw std::runtime_error("Number of dimensions must be two");
 	}
-	return Multi_array<Type,2>( (Type*)buffer.ptr , buffer.shape[0] , buffer.shape[1] );
+	return Multi_array<Type,2>( (Type*)buffer.ptr , buffer.shape[0] , buffer.shape[1] , buffer.strides[0] , buffer.strides[1] );
 };
 
+/* Copy constructor */
+template<class Type>
+Multi_array<Type,2>::Multi_array( Multi_array& Mom )
+:
+	alloc_func(NULL), /* No memory manegement allowed */
+	free_func(NULL),
+	ptr(Mom.ptr),
+	n_j(Mom.n_j), n_i(Mom.n_i),
+	stride_j(Mom.stride_j) , stride_i(Mom.stride_i)
+{};
+
+template<class Type>
+Multi_array<Type,2>::Multi_array(const Multi_array& Mom)
+:
+	alloc_func(NULL), /* No memory manegement allowed */
+	free_func(NULL),
+	ptr(Mom.ptr),
+	n_j(Mom.n_j), n_i(Mom.n_i),
+	stride_j(Mom.stride_j) , stride_i(Mom.stride_i)
+{};
+
+// Destructor
 template<class Type>
 Multi_array<Type,2>::~Multi_array()
 {
@@ -193,41 +291,54 @@ void Multi_array<Type,2>::_free_func()
 	ptr = NULL ;
 };
 
+template<class Type>
+inline char* Multi_array<Type,2>::displace( uint n_Bytes )
+{
+	return ((char*)ptr) + n_Bytes ;
+};
+
+template<class Type>
+inline char* Multi_array<Type,2>::displace( uint n_Bytes ) const
+{
+	return ((char*)ptr) + n_Bytes ;
+};
+
 // OPERATOR OVERLOAD 
 template<class Type>
 inline Type& Multi_array<Type,2>::operator ()( uint j , uint i )
 {
-	return ptr[steps_j*j+i] ;
+	return *( (Type*)displace( stride_j*j+stride_i*i ) ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,2>::operator()( uint j )
 {
-	return ptr + steps_j*j ;
+	return (Type*)displace( stride_j*j ) ;
+	
 };
 
 template<class Type>
 inline Type* Multi_array<Type,2>::operator[]( uint j )
 {
-	return ptr + steps_j*j ;
+	return (Type*)displace( stride_j*j ) ;
 };
 
 template<class Type>
 inline Type& Multi_array<Type,2>::operator ()( uint j , uint i ) const
 {
-	return ptr[steps_j*j+i] ;
+	return  *( (Type*)displace( stride_j*j+stride_i*i ) ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,2>::operator()( uint j ) const
 {
-	return ptr + steps_j*j ;
+	return (Type*)displace( stride_j*j ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,2>::operator[]( uint j ) const
 {
-	return ptr + steps_j*j ;
+	return (Type*)displace( stride_j*j ) ;
 };
 ////
 
@@ -264,8 +375,8 @@ py::array_t<Type, py::array::c_style> Multi_array<Type,2>::get_py_no_copy()
 	);
 };
 
-
-
+////////////////////////////////////
+/* with default strides */
 template<class Type>
 Multi_array<Type,3>::Multi_array
 ( 
@@ -280,10 +391,30 @@ Multi_array<Type,3>::Multi_array
 	free_func(free_func) , 
 	ptr( (Type*)alloc_func( n_k*n_j*n_i*sizeof(Type)) ),
 	n_k(n_k) , n_j(n_j) , n_i(n_i),
-	stride_k(n_j*n_i*sizeof(Type)) , stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type)),
-	steps_k(n_j*n_i) , steps_j(n_i)
+	stride_k(n_j*n_i*sizeof(Type)) , stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type))
 {};
-	
+
+/* declaring strides */
+template<class Type>
+Multi_array<Type,3>::Multi_array
+( 
+	uint n_k , // Number of elements in k
+	uint n_j , // Number of elements in j
+	uint n_i , // Number of elements in i
+	size_t stride_k , // The number of Bytes of n_i*n_j elements
+	size_t stride_j , // The number of Bytes of a complete row of elements
+	size_t stride_i , // The number of Bytes of one element
+	void* (*alloc_func)(size_t size) , // Custom allocation function 
+	void (*free_func)(void* ptr)
+)
+: 
+	alloc_func(alloc_func) , 
+	free_func(free_func) , 
+	ptr( (Type*)alloc_func(n_k*stride_k) ),
+	n_k(n_k) , n_j(n_j) , n_i(n_i),
+	stride_k(stride_k) , stride_j(stride_j) , stride_i(stride_i)
+{};
+/* 	Constructing from an existing pointer with default strides */
 template<class Type>
 Multi_array<Type,3>::Multi_array( Type* ptr , uint n_k , uint n_j , uint n_i )
 :
@@ -291,8 +422,26 @@ Multi_array<Type,3>::Multi_array( Type* ptr , uint n_k , uint n_j , uint n_i )
 	free_func(NULL),
 	ptr(ptr),
 	n_k(n_k) , n_j(n_j) , n_i(n_i),
-	stride_k(n_j*n_i*sizeof(Type)) , stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type)),
-	steps_k(n_j*n_i) , steps_j(n_i)
+	stride_k(n_j*n_i*sizeof(Type)) , stride_j(n_i*sizeof(Type)) , stride_i(sizeof(Type))
+{};
+/* 	Constructing from an existing pointer declaring strides */
+template<class Type>
+Multi_array<Type,3>::Multi_array
+(
+	Type* ptr ,
+	uint n_k ,
+	uint n_j ,
+	uint n_i ,
+	size_t stride_k , // The number of Bytes of n_i*n_j elements
+	size_t stride_j , // The number of Bytes of complete row of elements
+	size_t stride_i // The number of Bytes of one element
+)
+:
+	alloc_func(NULL), /* No memory manegement allowed */
+	free_func(NULL),
+	ptr(ptr),
+	n_k(n_k) , n_j(n_j) , n_i(n_i),
+	stride_k(stride_k) , stride_j(stride_j) , stride_i(stride_i)
 {};
 
 template<class Type>
@@ -305,9 +454,36 @@ Multi_array<Type,3> Multi_array<Type,3>::numpy( py::array_t<Type, py::array::c_s
 		throw std::runtime_error("Number of dimensions must be two");
 	}
 	
-	return Multi_array<Type,3>( (Type*)buffer.ptr , buffer.shape[0] , buffer.shape[1], buffer.shape[2] );
+	return Multi_array<Type,3>
+	( 	
+		(Type*)buffer.ptr , 
+		buffer.shape[0] , buffer.shape[1], buffer.shape[2] ,
+		buffer.strides[0] , buffer.strides[1], buffer.strides[2]
+	);
 };
 
+/* Copy constructors */
+template<class Type>
+Multi_array<Type,3>::Multi_array( Multi_array& Mom )
+:
+	alloc_func(NULL), /* No memory manegement allowed */
+	free_func(NULL),
+	ptr(Mom.ptr),
+	n_k(Mom.n_k) , n_j(Mom.n_j) , n_i(Mom.n_i),
+	stride_k(Mom.stride_k) , stride_j(Mom.stride_j) , stride_i(Mom.stride_i)
+{};
+	
+template<class Type>
+Multi_array<Type,3>::Multi_array(const Multi_array& Mom)
+:
+	alloc_func(NULL), /* No memory manegement allowed */
+	free_func(NULL),
+	ptr(Mom.ptr),
+	n_k(Mom.n_k) , n_j(Mom.n_j) , n_i(Mom.n_i),
+	stride_k(Mom.stride_k) , stride_j(Mom.stride_j) , stride_i(Mom.stride_i)
+{};
+
+// Destructor
 template<class Type>
 Multi_array<Type,3>::~Multi_array()
 {
@@ -323,53 +499,65 @@ void Multi_array<Type,3>::_free_func()
 	ptr = NULL ;
 };
 
+template<class Type>
+inline char* Multi_array<Type,3>::displace( uint n_Bytes )
+{
+	return ((char*)ptr) + n_Bytes ;
+};
+
+template<class Type>
+inline char* Multi_array<Type,3>::displace( uint n_Bytes ) const
+{
+	return ((char*)ptr) + n_Bytes ;
+};
+
 // OPERATOR OVERLOAD 	
 template<class Type>
 inline Type& Multi_array<Type,3>::operator ()( uint k , uint j , uint i )
 {
-	return ptr[steps_k*k+steps_j*j+i] ;
+	return *( (Type*)displace( stride_k*k+stride_j*j+stride_i*i ) ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,3>::operator()( uint k , uint j )
 {
-	return ptr + steps_k*k+steps_j*j ;
+	return (Type*)displace( stride_k*k + stride_j*j ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,3>::operator()( uint k )
 {
-	return ptr + steps_k*k ;
+	return (Type*)displace( stride_k*k ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,3>::operator[]( uint k )
 {
-	return ptr + steps_k*k ;
+	return (Type*)displace( stride_k*k ) ;
 };
 
 template<class Type>
 inline Type& Multi_array<Type,3>::operator ()( uint k , uint j , uint i ) const
 {
-	return ptr[steps_k*k+steps_j*j+i] ;
+	return *( (Type*)displace( stride_k*k+stride_j*j+stride_i*i ) ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,3>::operator()( uint k , uint j ) const
 {
-	return ptr + steps_k*k+steps_j*j ;
+	return (Type*)displace( stride_k*k + stride_j*j ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,3>::operator()( uint k ) const
 {
-	return ptr + steps_k*k ;
+	return  (Type*)displace( stride_k*k ) ;
 };
 
 template<class Type>
 inline Type* Multi_array<Type,3>::operator[]( uint k ) const
 {
-	return ptr + steps_k*k ;
+	return  (Type*)displace( stride_k*k ) ;
 };
 ////
 
@@ -378,8 +566,6 @@ Type* Multi_array<Type,3>::get()
 {
 	return ptr ;
 };
-
-
 
 template<class Type>
 py::array_t<Type, py::array::c_style> Multi_array<Type,3>::get_py_copy()

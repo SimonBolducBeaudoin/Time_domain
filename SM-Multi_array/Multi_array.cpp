@@ -22,5 +22,6 @@ MULTI_ARRAY(float) ;
 MULTI_ARRAY(double) ;
 MULTI_ARRAY(complex_f) ;
 MULTI_ARRAY(complex_d) ;
+// MULTI_ARRAY(fftw_complex) ; did not acheive to do it
 
 #undef MULTI_ARRAY

@@ -3,7 +3,7 @@
 
 """
 Validates that 
-    - Test functionnality of inputing multiple filters at creation of TimeQuad object
+    - Test multi-kernels functionnality with ones filters and no windows
 """
 
 import os, sys
@@ -17,8 +17,8 @@ from time_quadratures import *
 
 ## Setup variables
 l_kernel = (1<<8) + 1 ;
-n_kernels = 1 ;
-l_data= (1<<14) - 256;
+n_kernels = 2 ;
+l_data= (1<<14) ;
 dt = 0.03125 ;
 f_max_analogue = 10.0 ;
 f_min_analogue = 0.5 ;
@@ -26,7 +26,11 @@ alpha = 0.25 ;
 l_fft = 1<<10;
 n_threads = 2 ;
 
-X  = TimeQuad(l_kernel=l_kernel , n_kernels=n_kernels , l_data=l_data , dt=dt , f_max_analogue=f_max_analogue , f_min_analogue=f_min_analogue , alpha=alpha , l_fft=l_fft , n_threads=n_threads);
+l_hc = l_kernel//2 + 1 ;
+
+Filters = ones( (n_kernels,l_hc) , dtype=complex , order='C' ) ;
+
+X  = TimeQuad(l_kernel=l_kernel , n_kernels=n_kernels , l_data=l_data , dt=dt , f_max_analogue=f_max_analogue , f_min_analogue=f_min_analogue ,  filters=Filters , alpha=alpha , l_fft=l_fft , n_threads=n_threads);
 
 ks_p = X.ks_p();
 ks_q = X.ks_q();
@@ -39,11 +43,20 @@ data  = int16( normal(mu,sigma,l_data) );
 
 X.execute( data );
 
-P_Sci = fftconvolve(ks_p[0,:],data,mode='full') # shape 9001
-Q_Sci = fftconvolve(ks_q[0,:],data,mode='full')
+# fig, axs = subplots(2,1)
+# axs[0].plot( ks_p[0,:] )
+# axs[0].plot( ks_q[0,:] )
+# axs[1].plot( ks_p[1,:] )
+# axs[1].plot( ks_q[1,:] )
 
 fig, axs = subplots(2,1)
 axs[0].plot( ps[0,:] )
-axs[0].plot( ps[0,:] - P_Sci )
 axs[1].plot( qs[0,:] )
-axs[1].plot( qs[0,:] - Q_Sci )
+
+fig, axs = subplots(2,1)
+axs[0].plot( ps[1,:] )
+axs[1].plot( qs[1,:] )
+
+fig, axs = subplots(2,1)
+axs[0].plot( ps[1,:]-ps[0,:] )
+axs[1].plot( qs[1,:]-qs[0,:] )
