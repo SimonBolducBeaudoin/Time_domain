@@ -1,6 +1,7 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
 execfile("../common_header.py")
+from numpy import *
 
 def DFT_freq ( index , l_dft = 257 , dt = 0.03125  ) :
     """
@@ -43,6 +44,22 @@ def Gaussian_filter( f , df = 0.1 , l_kernel = 257 , dt = 0.03125 ) :
     for i in range( l_hc ) :
         x_f = DFT_freq ( i , l_kernel , dt ) ;
         Y[i] =  Gaussian ( x_f , f , df ) ;
+    
+    return Y ;
+    
+def Bi_Gaussian_filter( f1 , f2 , df1=0.1 , df2 = 0.1 , l_kernel = 257 , dt = 0.03125 ) :
+    """ 
+    Returns a numpy array of complex number corresponding to a gaussian filter
+    of avg f and std dev df on positive frequencies 
+    and with vector length equal to  l_kernel//2 + 1. 
+    This corresponds to a half complex vector.
+    """
+    l_hc = l_kernel//2+1 ;
+    
+    Y = empty( l_hc , dtype = complex , order='C') ;
+    for i in range( l_hc ) :
+        x_f = DFT_freq ( i , l_kernel , dt ) ;
+        Y[i] =  Gaussian ( x_f , f1 , df1 ) + Gaussian(x_f , f2 , df2) ;
     
     return Y ;
     

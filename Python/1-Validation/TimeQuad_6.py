@@ -3,8 +3,7 @@
 
 """
 Validates that 
-    - Test functionnality of inputing 1 filters but declaring 2 kernels pair
-        The first two kernles should be default and the 2nd pair should follow the given filter
+    - Test functionnality of inputing 1 bi_gaussian filter and n_kernels = 2
 """
 
 import os, sys
@@ -13,6 +12,7 @@ parentdir = os.path.abspath(os.path.join(currentdir, os.pardir)) ;
 sys.path.append(parentdir)
 
 execfile("../common_header.py")
+from my_python_library import *
 
 from time_quadratures import *
 
@@ -23,13 +23,14 @@ l_data= (1<<14) ;
 dt = 0.03125 ;
 f_max_analogue = 10.0 ;
 f_min_analogue = 0.5 ;
-alpha = 0.25 ;
+alpha = 0.75 ;
 l_fft = 1<<10;
 n_threads = 2 ;
 
 l_hc = l_kernel//2 + 1 ;
 
-Filters = 2*ones( (n_kernels-1,l_hc) , dtype=complex , order='C' ) ;
+Filters = empty( (1,l_hc) , dtype=complex , order='C' ) ;
+Filters[0,:] = Bi_Gaussian_filter( 4.0 , 5.0 , 0.1, 0.1 , l_kernel = l_kernel , dt = dt ) ;
 
 X  = TimeQuad(l_kernel=l_kernel , n_kernels=n_kernels , l_data=l_data , dt=dt , f_max_analogue=f_max_analogue , f_min_analogue=f_min_analogue ,  filters=Filters , alpha=alpha , l_fft=l_fft , n_threads=n_threads);
 
@@ -57,7 +58,3 @@ axs[1].plot( qs[0,:] )
 fig, axs = subplots(2,1)
 axs[0].plot( ps[1,:] )
 axs[1].plot( qs[1,:] )
-
-fig, axs = subplots(2,1)
-axs[0].plot( ps[1,:]-ps[0,:] )
-axs[1].plot( qs[1,:]-qs[0,:] )

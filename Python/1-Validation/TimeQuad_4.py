@@ -3,8 +3,7 @@
 
 """
 Validates that 
-    - Test functionnality of inputing 1 filters but declaring 2 kernels pair
-        The first two kernles should be default and the 2nd pair should follow the given filter
+    - Test functionnality of inputing 2 filters and declaring 2 kernels pair
 """
 
 import os, sys
@@ -29,7 +28,7 @@ n_threads = 2 ;
 
 l_hc = l_kernel//2 + 1 ;
 
-Filters = 2*ones( (n_kernels-1,l_hc) , dtype=complex , order='C' ) ;
+Filters = ones( (n_kernels,l_hc) , dtype=complex , order='C' ) ;
 
 X  = TimeQuad(l_kernel=l_kernel , n_kernels=n_kernels , l_data=l_data , dt=dt , f_max_analogue=f_max_analogue , f_min_analogue=f_min_analogue ,  filters=Filters , alpha=alpha , l_fft=l_fft , n_threads=n_threads);
 
