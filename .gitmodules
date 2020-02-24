@@ -1,6 +1,0 @@
-[submodule "SM-Time_quadratures"]
-	path = SM-Time_quadratures
-	url = https://github.com/SimonBolducBeaudoin/Time_quadratures-OTF.git
-[submodule "SM-Histograms"]
-	path = SM-Histograms
-	url = https://github.com/SimonBolducBeaudoin/Histograms-OTF.git
