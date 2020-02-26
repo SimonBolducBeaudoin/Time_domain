@@ -58,7 +58,3 @@ axs[1].plot( qs[0,:] )
 fig, axs = subplots(2,1)
 axs[0].plot( ps[1,:] )
 axs[1].plot( qs[1,:] )
-
-fig, axs = subplots(2,1)
-axs[0].plot( ps[1,:]-ps[0,:] )
-axs[1].plot( qs[1,:]-qs[0,:] )

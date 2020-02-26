@@ -400,6 +400,44 @@ void TimeQuad::execute_py( py::array_t<DataType> data )
 	execute( (DataType*)buf.ptr , buf.size );
 }
 
+np_double TimeQuad::get_ps()
+{
+	/*
+	Pybind11 doesn't work with uint64_t 
+		This coul potentially cause problems with l_data, l_valid and l_full
+	*/
+	// Numpy will not copy the array when using the assignement operator=
+	double* ptr = ps[0] + l_kernel -1 ;
+	py::capsule free_dummy(	ptr, [](void *f){;} );
+	
+	return py::array_t<double, py::array::c_style>
+	(
+		{uint(n_kernels), uint(l_valid) },      // shape
+		{ps.get_stride_j(), ps.get_stride_i() },   // C-style contiguous strides for double
+		ptr  ,       // the data pointer
+		free_dummy // numpy array references this parent
+	);
+}
+
+np_double TimeQuad::get_qs()
+{
+	/*
+	Pybind11 doesn't work with uint64_t 
+		This coul potentially cause problems with l_data, l_valid and l_full
+	*/
+	// Numpy will not copy the array when using the assignement operator=
+	double* ptr = qs[0] + l_kernel -1 ;
+	py::capsule free_dummy(	ptr, [](void *f){;} );
+	
+	return py::array_t<double, py::array::c_style>
+	(
+		{uint(n_kernels), uint(l_valid)},      // shape
+		{qs.get_stride_j(), qs.get_stride_i() },   // C-style contiguous strides for double
+		ptr  ,       // the data pointer
+		free_dummy // numpy array references this parent
+	);
+}
+
 // MACROS UNDEF
 #undef KS_INPUTS 
 #undef AC_INPUTS 

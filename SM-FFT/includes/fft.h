@@ -6,6 +6,16 @@
 
 #include "../../SM-Scoped_timer/includes/scoped_timer.h"
 
+/*
+	Remove dependency of Buffered_Vector etc. by multi_arrays
+	Make it work like ( Remove the complicated behaviour )
+		- Object construction
+			+ Algorithm choice
+			+ memory allocation
+		- execution
+		- dectruction
+*/
+
 // primary template
 
 template <class FloatType, class DataType>

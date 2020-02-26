@@ -198,30 +198,22 @@ TASK_02 Adding first order moment and cumulant to 2D histograms
 - Only l_data, l_valid, l_full and bin depth of 1D histograms should be uint64_t other should be uint
 - 
 
+## 24-02-20
+- Removed git submodule
+- Added a feature to Histograms
+	- Cap the number of thread depending on machine
+- Make it so that TimeQuad object return only valid part to Python
+	- Done and tested
+- Prepare routine PQvsVDC_0
+	- Aquiering  p and q using multiple filters
+	- Accumulating the results in 2D Histogram leeping track of experimental parameters
+	- Calculating cumulants from those
+	- Display expval of n and n^2 from thos data
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Futur
+- Checks if n_threads checks works properly for histogram class
+	
+# OPENNED BUGS 
+- Pybind11 doesn't work with uint64_t 
+	- This coul potentially cause problems with l_data, l_valid and l_full
 

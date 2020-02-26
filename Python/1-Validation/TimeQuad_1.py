@@ -39,8 +39,8 @@ data  = int16( normal(mu,sigma,l_data) );
 
 X.execute( data );
 
-P_Sci = fftconvolve(ks_p[0,:],data,mode='full') # shape 9001
-Q_Sci = fftconvolve(ks_q[0,:],data,mode='full')
+P_Sci = fftconvolve(ks_p[0,:],data,mode='valid') # shape 9001
+Q_Sci = fftconvolve(ks_q[0,:],data,mode='valid')
 
 fig, axs = subplots(2,1)
 axs[0].plot( ps[0,:] )

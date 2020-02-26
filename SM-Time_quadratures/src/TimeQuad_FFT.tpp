@@ -176,7 +176,7 @@ void TimeQuad_FFT::execute( int16_t* data )
 			for( uint k = 0 ; k < l_reste + l_kernel - 1 ; k++ )
 			{
 				ps(j,n_chunks*l_chunk+k) += ( (double*)h_ps(j,0))[k] /l_fft ;
-				qs(j,n_chunks*l_chunk+k) += ( (double*)h_qs(j,0))[k] /l_fft;
+				qs(j,n_chunks*l_chunk+k) += ( (double*)h_qs(j,0))[k] /l_fft ;
 			}
 		}
 	}

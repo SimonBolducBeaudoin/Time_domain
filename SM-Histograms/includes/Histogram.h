@@ -4,6 +4,14 @@
 #include "../../SM-Omp_extra/includes/omp_extra.h"
 
 /*
+	TODOS
+	- Quality of life : add a function that recovers 1D histograms from 2D histogram ?
+	- integrate Multi_array into histogram classes for better memory locality
+	- Modify Multi_array for custom memory organisation (optimal for centered biased histograms)
+*/
+
+
+/*
 # Uncomment to benchmark
 */
 //#include "../../SM-Scoped_timer/includes/scoped_timer.h"
@@ -69,6 +77,10 @@ class Histogram
 		uint64_t nofbins ;
 		int n_threads ;
 		BinType* histogram ;
+		
+		// Checks
+		void Check_parity() ;
+		void Check_n_threads() ;
         
         // C++ INTERFACE
             // Core functions

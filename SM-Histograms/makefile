@@ -2,13 +2,11 @@
 # Those objects have to be up to date
 tempo2 = $(wildcard ../SM-Scoped_timer/obj/*.o)
 tempo3 = $(wildcard ../SM-Omp_extra/obj/*.o)
-tempo4 = $(wildcard ../SM-Windowing/obj/*.o)
-tempo5 = $(wildcard ../SM-Special_functions/*.o)
-tempo6 = $(wildcard ../SM-Numerical_integration/*.o)
-tempo7 = $(wildcard ../SM-Multi_array/*.o)
-EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3) $(tempo4) $(tempo5) $(tempo6) $(tempo7)
+tempo4 = $(wildcard ../SM-Moments_cumulants/obj/*.o)
+tempo5 = $(wildcard ../SM-Math_extra/*.o)
+EXTERNAL_OBJ = $(tempo1) $(tempo2) $(tempo3) $(tempo4) $(tempo5)
 
-TARGET_NAME = time_quadratures
+TARGET_NAME = Histograms
 TARGET_STATIC = $(TARGET_NAME).a
 PYLIB_EXT = $(if $(filter $(OS),Windows_NT),.pyd,.so)
 TARGET_PYLIB = ../Python/$(TARGET_NAME)$(PYLIB_EXT)
@@ -23,7 +21,6 @@ SDIR = src
 SRC  = $(wildcard $(SDIR)/*.cpp)
 OBJ  = $(patsubst $(SDIR)/%.cpp,$(ODIR)/%.o,$(SRC))
 DEPS = $(OBJ:.o=.d)
-# HEAD = $(patsubst $(SDIR)/%.cpp,$(IDIR)/%.h,$(SRC))
 
 # Toolchain, using mingw on windows
 CC = $(OS:Windows_NT=x86_64-w64-mingw32-)g++

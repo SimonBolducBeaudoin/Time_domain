@@ -76,6 +76,10 @@ class Histogram2D
 		int n_threads ;
 		BinType* histogram ;
 		uint8_t** hs ;
+		
+		// Checks
+		void Check_parity() ;
+		void Check_n_threads() ;
 
         // C++ INTERFACE
 		void Allocate_all_heap();

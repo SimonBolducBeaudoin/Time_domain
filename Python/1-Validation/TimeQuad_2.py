@@ -43,11 +43,11 @@ data  = int16( normal(mu,sigma,l_data) );
 
 X.execute( data );
 
-# fig, axs = subplots(2,1)
-# axs[0].plot( ks_p[0,:] )
-# axs[0].plot( ks_q[0,:] )
-# axs[1].plot( ks_p[1,:] )
-# axs[1].plot( ks_q[1,:] )
+fig, axs = subplots(2,1)
+axs[0].plot( ks_p[0,:] )
+axs[0].plot( ks_q[0,:] )
+axs[1].plot( ks_p[1,:] )
+axs[1].plot( ks_q[1,:] )
 
 fig, axs = subplots(2,1)
 axs[0].plot( ps[0,:] )

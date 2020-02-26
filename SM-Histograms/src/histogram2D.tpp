@@ -5,13 +5,35 @@ Histogram2D<BinType>::Histogram2D( uint64_t nofbins, int n_threads )
 	n_threads(n_threads),
 	histogram(NULL)
 {
+	Check_parity() ;
+	Check_n_threads() ;
+	
+	omp_set_num_threads(n_threads);
+	
+	Allocate_all_heap();
+}
+
+template < class BinType >
+void Histogram2D<BinType>::Check_parity()
+{
 	if (nofbins%2 != 0 )
     {
 		throw std::runtime_error(" The number of bin must be even.");
 	}
-	omp_set_num_threads(n_threads);
-	
-	Allocate_all_heap();
+}
+
+template < class BinType >
+void Histogram2D<BinType>::Check_n_threads()
+{
+	if ( n_threads <= 0 )
+	{
+		throw std::runtime_error(" n_threads <= 0 dont expect this to work... ");
+	}
+	else if ( n_threads > physical_n_threads() )
+	{
+		printf("Warning : The wanted number of thread (%d) is higher than the number of physical threads (%d) in this computer. n_thread was replaced by physical_n_threads. \n", n_threads, physical_n_threads() );
+		n_threads = physical_n_threads();
+	}
 }
 
 template< class BinType>

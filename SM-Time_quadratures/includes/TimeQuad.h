@@ -12,6 +12,12 @@
 #include "TimeQuad_direct.h"
 
 /*
+	TODOS
+	- Find a way to automatically normalized the result of the convolution product ..?
+*/
+
+
+/*
 	The member TimeQuad_algorithm is implementing virtual functions to acheive run time polymorphism.
 	See :
 		- https://www.geeksforgeeks.org/polymorphism-in-c/
@@ -71,8 +77,9 @@ class TimeQuad
 		// Python getters
 		np_double get_ks_p(){ return ks_p.get_py_no_copy() ;};
 		np_double get_ks_q(){ return ks_q.get_py_no_copy() ;};
-		np_double get_ps(){ return ps.get_py_no_copy() ;};
-		np_double get_qs(){ return qs.get_py_no_copy() ;};
+			// Returns only the valid part of the convolution
+		np_double get_ps();
+		np_double get_qs();
 		
 		// Utilities
 		inline uint l_kernel_half_c( uint l_kernel ){ return l_kernel/2+1 ;};
