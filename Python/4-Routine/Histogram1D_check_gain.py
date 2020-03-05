@@ -7,24 +7,18 @@ parentdir = os.path.abspath(os.path.join(currentdir, os.pardir)) ;
 sys.path.append(parentdir)
 
 execfile("../common_header.py");
+from my_pyHegel_library import * ;
 from Histograms import *
 
 ## Experiment parameters
     # TimeQuad params
-l_data= 1<<24;
+l_data= 1<<30;
     # Guzik params
 gain_dB = 11.0 ; # Warning : choose this wisely before running
 
 ## Loading GUZIK
-try:
-    if not isinstance(gz, instruments.guzik.guzik_adp7104):
-        print "\nLoading guzik :"
-        gz = instruments.guzik_adp7104()
-except:
-    print "\nLoading guzik :"
-    gz = instruments.guzik_adp7104()
-    
-gz.config([1], n_S_ch=l_data, gain_dB=gain_dB, bits_16=True, equalizer_en=True, ext_ref='int')
+gz = load_guzik(); 
+gz.config([1], n_S_ch=l_data, gain_dB=gain_dB, bits_16=True, equalizer_en=False, ext_ref='int')
 
 ## The EXPERIMENT
     # Fetching data from Guzik

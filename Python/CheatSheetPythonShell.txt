@@ -1,16 +1,32 @@
 import os
-os.chdir('C:\Projets\Time_Domain_Optic\Time_domain\Python\PY-Experiments');
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python/PY-Experiments');
 
 import os
-os.chdir('C:\Projets\Time_Domain_Optic\Time_domain\Python\Tutorial');
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python/Tutorial');
 
 import os
-os.chdir('C:\Projets\Time_Domain_Optic\Time_domain\Python');
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python');
 
 import os
-os.chdir('C:\Users\simon\Desktop\CODES\Time_domain\Python');
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python/0-Proof_of_concepts');
 
+import os
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python/1-Validation');
 
+import os
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python/4-Routine');
+
+import os
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python/5-Experiments');
+
+import os
+os.chdir('C:/Users/simon/Desktop/CODES/Time_domain/Python');
+
+import os
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python/5-Experiments/How_many_ADC/20-03-04_13h15');
+
+import os
+os.chdir('C:/Projets/Time_Domain_Optic/Time_domain/Python/5-Experiments/PQsVsVDC/20-03-03_17h45');
 
 gz = instruments.guzik_adp7104()
 

@@ -214,11 +214,50 @@ TASK_02 Adding first order moment and cumulant to 2D histograms
 - Prepare 2-Slides on TDQO measurments
 - Open a long beamer presentation
 
+# 29-02-20
+- Determine  how many ADC there are using histograms
+    - 2 ADCs with different response
+
+ 
+# 02-03-20
+- Bug fix in TimeQuad
+    - (Fixed) Loopping on TimeQuad.execute(data) was always accumulating in ps and qs (they kept on growing)
+        - Fixed by reseting ps and qs to 0 in between execution (only overlapping part between threads)
+          and using = instead of += when possible.
+    - (Fixed) Was not behaving as indtended when 1 filter was given...
+- Wrote Validation script TimeQuad_7 and 8 and PQsVsVdc_0
+- Bug fix in Multi_array
+    - (Temporally fixed) Multi_array's index overflowed when array is big.
+- Launch an overnight measurment of expval n and n^2 vs Vdc
+   - k
+- Write a quick implementation for bistrpectrum
+
 # Futur
+- Write a Guzik logical device for pyHegel
+- Same for yoko
+- Update Timing labrary to use high precision time (see: fftw  documentation on timing)
+- Time_quad can probably by optimized 
+    - SIMD instruction could be used
+    - Using fftw's multi-dimension fft to manage fft's in bulk ?
+    - Optimization for FFT size and l_data not trivial
 - Checks if n_threads checks works properly for histogram class
 - Prepare routine PQvsVDC_0
 	- Calculating cumulants from those
 	- Display expval of n and n^2 from thos data
+- Write down the clean demonstration for 2 coherents sources
+- Histograms: BUG FIX to implement
+    - histograms dont properly manage inputs of the for numpy_array[s,S,Step] because it only uses ptr and size
+        - Fix : Implement Multi_array<DataType,1> data 
+            that is initialized empty and 
+            that then uses the asignment operator to inherit the properties of a np array
+            - Multi_array<T,1> operator= is written (no test done)
+            - Next step : add member Multi_array<DataType,1> data in histogram
+            - Test : it should avoir unnecessary copies
+            - Implement for Dim = 2 and 3.
+    - Also Replace all memory manegement in hitograms for Multi_arrays
+- Bug in Multi_array : there can be some overfloa in some condition. 
+    - Need to add check at creation
+    - Need to optimize for speed
 
 # OPENNED BUGS 
 - Pybind11 doesn't work with uint64_t 

@@ -1,7 +1,12 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
-execfile("../common_header.py")
-from numpy import *
+from numpy import (array, empty, meshgrid, arange, zeros, ones , array_equal, around
+                   , convolve , uint8 ,int8, uint16 ,int16 , float32 ,float64 , size , savez, log2
+                   , array_equal , allclose , sin, cos , tan , exp
+                   , sqrt, absolute, sign , pi, concatenate
+                   , mean , around , vectorize)
+from numpy.fft import fft, ifft, rfft, irfft, fftfreq
+from numpy.random import normal, randint 
 
 def DFT_freq ( index , l_dft = 257 , dt = 0.03125  ) :
     """

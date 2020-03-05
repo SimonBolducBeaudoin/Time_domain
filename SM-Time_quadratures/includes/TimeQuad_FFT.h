@@ -30,9 +30,9 @@ class TimeQuad_FFT: public TimeQuad_algorithm
 	#undef EXECUTE
 	
 	// Utilities
-	inline uint compute_l_chunk( uint l_kernel ,  uint l_fft  ){ return l_chunk = l_fft - l_kernel + 1 ; };
-	inline uint compute_n_chunks( uint64_t l_data , uint l_chunk ){ return  n_chunks = l_data/l_chunk ;	};
-	inline uint compute_l_reste( uint64_t l_data , uint l_chunk ){ return l_reste = l_data%l_chunk ; };
+	inline uint compute_l_chunk( uint l_kernel ,  uint l_fft  ){ return l_fft - l_kernel + 1 ; };
+	inline uint compute_n_chunks( uint64_t l_data , uint l_chunk ){ return  l_data/l_chunk ;	};
+	inline uint compute_l_reste( uint64_t l_data , uint l_chunk ){ return l_data%l_chunk ; };
 		
 	private :
 	// Kernels info

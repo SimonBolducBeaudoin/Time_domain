@@ -128,17 +128,20 @@ void TimeQuad::checks_n_threads()
 
 void TimeQuad::checks_filters()
 {
+    /*No filter -> only one kernel*/
 	if ( ( filters.get() == NULL ) and ( n_kernels != 1 ))
 	{
 		throw std::runtime_error(" If no filter is given there can be only one set of kernels.");
 	}
-	if ( ( filters.get() != NULL ) and ( n_kernels == 1 ) and ( filters.get_n_j() != n_kernels ) )
+    /*filter and n_kernels ==1   -> only one filters*/
+	else if ( ( filters.get() != NULL ) and ( n_kernels == 1 ) and ( filters.get_n_j() != n_kernels ) )
 	{
-		throw std::runtime_error(" If there is only one filter given n_kernels must be equal to 1.");
+		throw std::runtime_error(" If a list of filters is given and n_kernels = 1 then n_filters must be equal to 1.");
 	}
-	if ( ( filters.get() != NULL ) and ( n_kernels > 1 ) and ( filters.get_n_j() != n_kernels ) and ( filters.get_n_j() != n_kernels - 1 )  )
+    /*filter and n_kernels >1   -> same number of filters or one less*/
+	else if ( ( filters.get() != NULL ) and ( n_kernels > 1 ) and ( filters.get_n_j() != n_kernels ) and ( filters.get_n_j() != n_kernels - 1 )  )
 	{
-		throw std::runtime_error(" The number of filters must be equal to n_kernels or n_kernels - 1.");
+		throw std::runtime_error(" If a list of filters and n_kernels > 1 then n_filters must be equal to n_kernels or n_kernels - 1.");
 	}
 	if( (filters.get() != NULL) and (filters.get_n_i() != l_kernel_half_c(l_kernel)) )
 	{
@@ -296,7 +299,6 @@ void TimeQuad::apply_filters()
 		fftw_execute_dft_r2c( k_foward, ks_q[i] , reinterpret_cast<fftw_complex*>(ks_q[i]) ); 
 	}
 	
-	
 	if (filters.get() == NULL) /* No filter given ==> Only one kernel */
 	{	
 		/* Default filter */
@@ -304,9 +306,9 @@ void TimeQuad::apply_filters()
 		Tukey_modifed_Window( ks_p_complex[0] , f , l_f , f_min_analogue , f_max_analogue , f_Nyquist ) ;
 		Tukey_modifed_Window( ks_q_complex[0] , f , l_f , f_min_analogue , f_max_analogue , f_Nyquist ) ;
 	}
-	else if ( filters.get_n_j() == 1 ) /*  There is only one filter given */
+    /*filter and n_kernels ==1   -> only one filters*/
+	else if ( ( n_kernels == 1 ) and ( filters.get_n_j() == 1 ) )
 	{
-		/* Apply costum filter */
 		for ( uint j = 0 ; j<l_f ; j++ )
 		{
 			ks_p_complex(0,j) *= filters(0,j) ;

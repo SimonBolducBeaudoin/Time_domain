@@ -18,7 +18,7 @@ from time_quadratures import *
 ## Setup variables
 l_kernel = (1<<8) + 1 ;
 n_kernels = 1 ;
-l_data= (1<<14) - 256;
+l_data= (1<<14) ;
 dt = 0.03125 ;
 f_max_analogue = 10.0 ;
 f_min_analogue = 0.5 ;

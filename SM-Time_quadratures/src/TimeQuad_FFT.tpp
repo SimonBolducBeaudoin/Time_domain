@@ -76,11 +76,39 @@ void TimeQuad_FFT::prepare_kernels()
 						
 void TimeQuad_FFT::execute( int16_t* data )
 {	
-	
+    /////////////////////
+    // RESET PS AND QS //
+    /////////////////////
+	#pragma omp parallel
+    {
+        manage_thread_affinity();
+        // Reset ps and qs to 0
+        // Only the parts that are subject to race conditions
+        #pragma omp for
+		for( uint i=0; i < n_chunks-1 ; i++ )
+		{		
+			///// THIS FOR EACH KERNELS PAIRS
+			
+			for ( uint j = 0 ; j<n_kernels ; j++ ) 
+			{   
+                // Last l_kernel-1.0 points
+				// Subject to race conditions
+				for( uint k=l_chunk ; k < l_chunk + l_kernel-1 ; k++ )
+				{
+					ps(j,i*l_chunk+k) = 0.0 ;
+					qs(j,i*l_chunk+k) = 0.0 ;
+				}
+			}
+			
+		}
+    }
+    /////////////////////
+    
+    
 	#pragma omp parallel
 	{	
 		manage_thread_affinity();
-		
+             
 		int this_thread = omp_get_thread_num();
 		complex_d tmp ; // Intermediate variable 
 		
@@ -123,13 +151,24 @@ void TimeQuad_FFT::execute( int16_t* data )
 				fftw_execute_dft_c2r(h_plan , reinterpret_cast<fftw_complex*>(h_ps(j,this_thread)) , (double*)h_ps(j,this_thread) );  
 				fftw_execute_dft_c2r(h_plan , reinterpret_cast<fftw_complex*>(h_qs(j,this_thread)) , (double*)h_qs(j,this_thread) ); 
 				
-				// Copy result to p and q 
-				for( uint k=0; k < l_chunk ; k++ )
-				{	
-					ps(j,i*l_chunk+k) += ( (double*)h_ps(j,this_thread))[k] / l_fft ;
-					qs(j,i*l_chunk+k) += ( (double*)h_qs(j,this_thread))[k] / l_fft ;
+                // First l_kernel-1.0 points
+				// Subject to race conditions
+				for( uint k=0; k < l_kernel-1 ; k++ )
+				{
+					#pragma omp atomic update
+					ps(j,i*l_chunk+k) += ( (double*)h_ps(j,this_thread))[k] /l_fft ;
+					#pragma omp atomic update
+					qs(j,i*l_chunk+k) += ( (double*)h_qs(j,this_thread))[k] /l_fft ;
 				}
-				
+				// Copy result to p and q 
+                // Not subject to race conditions
+				for( uint k=l_kernel-1; k < l_chunk ; k++ )
+				{	
+					ps(j,i*l_chunk+k) = ( (double*)h_ps(j,this_thread))[k] / l_fft ;
+					qs(j,i*l_chunk+k) = ( (double*)h_qs(j,this_thread))[k] / l_fft ;
+				}
+                // Last l_kernel-1.0 points
+				// Subject to race conditions
 				for( uint k=l_chunk ; k < l_fft ; k++ )
 				{
 					#pragma omp atomic update
@@ -173,10 +212,10 @@ void TimeQuad_FFT::execute( int16_t* data )
 			fftw_execute_dft_c2r(h_plan , reinterpret_cast<fftw_complex*>(h_qs(j,0)) , (double*)h_qs(j,0) ); 
 		
 			// Select only the part of the ifft that contributes to the full output length
-			for( uint k = 0 ; k < l_reste + l_kernel - 1 ; k++ )
+            for( uint k = 0 ; k < l_reste + l_kernel - 1 ; k++ )
 			{
-				ps(j,n_chunks*l_chunk+k) += ( (double*)h_ps(j,0))[k] /l_fft ;
-				qs(j,n_chunks*l_chunk+k) += ( (double*)h_qs(j,0))[k] /l_fft ;
+				ps(j,n_chunks*l_chunk+k) = ( (double*)h_ps(j,0))[k] /l_fft ;
+				qs(j,n_chunks*l_chunk+k) = ( (double*)h_qs(j,0))[k] /l_fft ;
 			}
 		}
 	}

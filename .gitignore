@@ -7,3 +7,9 @@
 *.d
 
 Python/Experiments/
+
+*.npz
+
+*.pdf
+
+*.png

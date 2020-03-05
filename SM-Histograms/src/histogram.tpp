@@ -62,7 +62,7 @@ void Histogram<BinType>::accumulate(  double* data,  uint64_t L_data , double ma
 	}
 }
 
-template<class BinType>
+/* template<class BinType>
 void Histogram<BinType>::accumulate(  float* data,  uint64_t L_data , float max )
 {
 	// printf("Accumulating floats \n");
@@ -86,7 +86,7 @@ void Histogram<BinType>::accumulate(  float* data,  uint64_t L_data , float max 
 			float_to_hist( data[i], histogram , max , bin_width);	
 		}
 	}
-}
+} */
 
 template<class BinType>
 void Histogram<BinType>::accumulate( uint8_t* data,  uint64_t L_data )

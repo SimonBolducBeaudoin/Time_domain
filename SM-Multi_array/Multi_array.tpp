@@ -1,14 +1,4 @@
-#include<malloc.h>
-
-#include <pybind11/pybind11.h>
-#include <pybind11/complex.h>
-#include <pybind11/numpy.h>
-
-namespace py = pybind11;
-using namespace pybind11::literals;
-typedef std::complex<float> complex_f;
-typedef std::complex<double> complex_d;
-typedef unsigned int uint;
+#include "Multi_array.h"
 
 // see : https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/aligned-malloc?view=vs-2019
 // https://stackoverflow.com/questions/44659924/returning-numpy-arrays-via-pybind11
@@ -33,9 +23,19 @@ void* _128bit_aligned_malloc( size_t size )
 };
 
 template<class Type>
+Multi_array<Type,1>::Multi_array()
+: 
+	alloc_func(NULL) , 
+	free_func(NULL) , 
+	ptr( NULL ),
+	n_i(0),
+	stride_i(0)
+{};
+
+template<class Type>
 Multi_array<Type,1>::Multi_array
 ( 
-	uint n_i , // Number of elements in i
+	uint64_t n_i , // Number of elements in i
 	size_t stride_i , // The number of Bytes of one element 
 	void* (*alloc_func)(size_t size) , // Custom allocation function 
 	void (*free_func)(void* ptr)
@@ -49,7 +49,7 @@ Multi_array<Type,1>::Multi_array
 {};
 
 template<class Type>
-Multi_array<Type,1>::Multi_array( Type* ptr , uint n_i , size_t stride_i)
+Multi_array<Type,1>::Multi_array( Type* ptr , uint64_t n_i , size_t stride_i)
 :
 	alloc_func(NULL), /* No memory manegement allowed */
 	free_func(NULL),
@@ -99,6 +99,15 @@ Multi_array<Type,1>::~Multi_array()
 	_free_func();
 };
 
+// template<class Type>
+// void Multi_array<Type,1>::check_overflow()
+// {
+    // if ()
+	// {
+		// throw std::runtime_error(" l_kernel is not odd dont expect this to work... ");
+	// }
+// }
+
 template<class Type>
 void Multi_array<Type,1>::_free_func()
 {
@@ -109,48 +118,42 @@ void Multi_array<Type,1>::_free_func()
 };
 
 template<class Type>
-inline char* Multi_array<Type,1>::displace( uint n_Bytes )
+inline char* Multi_array<Type,1>::displace( uint64_t n_Bytes )
 {
 	return ((char*)ptr) + n_Bytes ;
 };
 
 template<class Type>
-inline char* Multi_array<Type,1>::displace( uint n_Bytes ) const
+inline char* Multi_array<Type,1>::displace( uint64_t n_Bytes ) const
 {
 	return ((char*)ptr) + n_Bytes ;
 };
 
 // OPERATOR OVERLOAD
 template<class Type>
-inline Type& Multi_array<Type,1>::operator()( uint i )
+inline Type& Multi_array<Type,1>::operator()( uint64_t i )
 {
 	return  *( (Type*)displace( stride_i*i ) ) ;
 };
 
 template<class Type>
-inline Type& Multi_array<Type,1>::operator()( uint i ) const
+inline Type& Multi_array<Type,1>::operator()( uint64_t i ) const
 {
 	return *( (Type*)displace( stride_i*i ) ) ;
 };
 
 template<class Type>
-inline Type& Multi_array<Type,1>::operator[]( uint i )
+inline Type& Multi_array<Type,1>::operator[]( uint64_t i )
 {
 	return  *( (Type*)displace( stride_i*i ) ) ;
 };
 
 template<class Type>
-inline Type& Multi_array<Type,1>::operator[]( uint i ) const
+inline Type& Multi_array<Type,1>::operator[]( uint64_t i ) const
 {
 	return *( (Type*)displace( stride_i*i ) ) ;
 };
 ////
-
-template<class Type>
-inline Type* Multi_array<Type,1>::get()
-{
-	return ptr ;
-};
 
 template<class Type>
 py::array_t<Type, py::array::c_style> Multi_array<Type,1>::get_py_copy()
@@ -184,8 +187,8 @@ py::array_t<Type, py::array::c_style> Multi_array<Type,1>::get_py_no_copy()
 template<class Type>
 Multi_array<Type,2>::Multi_array
 ( 
-	uint n_j , // Number of elements in j
-	uint n_i , // Number of elements in i
+	uint64_t n_j , // Number of elements in j
+	uint64_t n_i , // Number of elements in i
 	void* (*alloc_func)(size_t size) , // Custom allocation function 
 	void (*free_func)(void* ptr)
 )
@@ -200,8 +203,8 @@ Multi_array<Type,2>::Multi_array
 template<class Type>
 Multi_array<Type,2>::Multi_array
 ( 
-	uint n_j , // Number of elements in j
-	uint n_i , // Number of elements in i
+	uint64_t n_j , // Number of elements in j
+	uint64_t n_i , // Number of elements in i
 	size_t stride_j , // The number of Bytes of complete row of elements
 	size_t stride_i , // The number of Bytes of one element
 	void* (*alloc_func)(size_t size) , // Custom allocation function 
@@ -216,7 +219,7 @@ Multi_array<Type,2>::Multi_array
 {};
 /* 	Constructing from an existing pointer with default strides */	
 template<class Type>
-Multi_array<Type,2>::Multi_array( Type* ptr , uint n_j , uint n_i )
+Multi_array<Type,2>::Multi_array( Type* ptr , uint64_t n_j , uint64_t n_i )
 :
 	alloc_func(NULL), /* No memory manegement allowed */
 	free_func(NULL),
@@ -229,8 +232,8 @@ template<class Type>
 Multi_array<Type,2>::Multi_array
 ( 
 	Type* ptr , 
-	uint n_j , 
-	uint n_i , 
+	uint64_t n_j , 
+	uint64_t n_i , 
 	size_t stride_j , 
 	size_t stride_i 
 )
@@ -292,51 +295,51 @@ void Multi_array<Type,2>::_free_func()
 };
 
 template<class Type>
-inline char* Multi_array<Type,2>::displace( uint n_Bytes )
+inline char* Multi_array<Type,2>::displace( uint64_t n_Bytes )
 {
 	return ((char*)ptr) + n_Bytes ;
 };
 
 template<class Type>
-inline char* Multi_array<Type,2>::displace( uint n_Bytes ) const
+inline char* Multi_array<Type,2>::displace( uint64_t n_Bytes ) const
 {
 	return ((char*)ptr) + n_Bytes ;
 };
 
 // OPERATOR OVERLOAD 
 template<class Type>
-inline Type& Multi_array<Type,2>::operator ()( uint j , uint i )
+inline Type& Multi_array<Type,2>::operator ()( uint64_t j , uint64_t i )
 {
 	return *( (Type*)displace( stride_j*j+stride_i*i ) ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,2>::operator()( uint j )
+inline Type* Multi_array<Type,2>::operator()( uint64_t j )
 {
 	return (Type*)displace( stride_j*j ) ;
 	
 };
 
 template<class Type>
-inline Type* Multi_array<Type,2>::operator[]( uint j )
+inline Type* Multi_array<Type,2>::operator[]( uint64_t j )
 {
 	return (Type*)displace( stride_j*j ) ;
 };
 
 template<class Type>
-inline Type& Multi_array<Type,2>::operator ()( uint j , uint i ) const
+inline Type& Multi_array<Type,2>::operator ()( uint64_t j , uint64_t i ) const
 {
 	return  *( (Type*)displace( stride_j*j+stride_i*i ) ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,2>::operator()( uint j ) const
+inline Type* Multi_array<Type,2>::operator()( uint64_t j ) const
 {
 	return (Type*)displace( stride_j*j ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,2>::operator[]( uint j ) const
+inline Type* Multi_array<Type,2>::operator[]( uint64_t j ) const
 {
 	return (Type*)displace( stride_j*j ) ;
 };
@@ -380,9 +383,9 @@ py::array_t<Type, py::array::c_style> Multi_array<Type,2>::get_py_no_copy()
 template<class Type>
 Multi_array<Type,3>::Multi_array
 ( 
-	uint n_k , // Number of elements in j
-	uint n_j , // Number of elements in j
-	uint n_i , // Number of elements in i
+	uint64_t n_k , // Number of elements in j
+	uint64_t n_j , // Number of elements in j
+	uint64_t n_i , // Number of elements in i
 	void* (*alloc_func)(size_t size) , // Custom allocation function 
 	void (*free_func)(void* ptr)
 )
@@ -398,9 +401,9 @@ Multi_array<Type,3>::Multi_array
 template<class Type>
 Multi_array<Type,3>::Multi_array
 ( 
-	uint n_k , // Number of elements in k
-	uint n_j , // Number of elements in j
-	uint n_i , // Number of elements in i
+	uint64_t n_k , // Number of elements in k
+	uint64_t n_j , // Number of elements in j
+	uint64_t n_i , // Number of elements in i
 	size_t stride_k , // The number of Bytes of n_i*n_j elements
 	size_t stride_j , // The number of Bytes of a complete row of elements
 	size_t stride_i , // The number of Bytes of one element
@@ -416,7 +419,7 @@ Multi_array<Type,3>::Multi_array
 {};
 /* 	Constructing from an existing pointer with default strides */
 template<class Type>
-Multi_array<Type,3>::Multi_array( Type* ptr , uint n_k , uint n_j , uint n_i )
+Multi_array<Type,3>::Multi_array( Type* ptr , uint64_t n_k , uint64_t n_j , uint64_t n_i )
 :
 	alloc_func(NULL), /* No memory manegement allowed */
 	free_func(NULL),
@@ -429,9 +432,9 @@ template<class Type>
 Multi_array<Type,3>::Multi_array
 (
 	Type* ptr ,
-	uint n_k ,
-	uint n_j ,
-	uint n_i ,
+	uint64_t n_k ,
+	uint64_t n_j ,
+	uint64_t n_i ,
 	size_t stride_k , // The number of Bytes of n_i*n_j elements
 	size_t stride_j , // The number of Bytes of complete row of elements
 	size_t stride_i // The number of Bytes of one element
@@ -500,62 +503,62 @@ void Multi_array<Type,3>::_free_func()
 };
 
 template<class Type>
-inline char* Multi_array<Type,3>::displace( uint n_Bytes )
+inline char* Multi_array<Type,3>::displace( uint64_t n_Bytes )
 {
 	return ((char*)ptr) + n_Bytes ;
 };
 
 template<class Type>
-inline char* Multi_array<Type,3>::displace( uint n_Bytes ) const
+inline char* Multi_array<Type,3>::displace( uint64_t n_Bytes ) const
 {
 	return ((char*)ptr) + n_Bytes ;
 };
 
 // OPERATOR OVERLOAD 	
 template<class Type>
-inline Type& Multi_array<Type,3>::operator ()( uint k , uint j , uint i )
+inline Type& Multi_array<Type,3>::operator ()( uint64_t k , uint64_t j , uint64_t i )
 {
 	return *( (Type*)displace( stride_k*k+stride_j*j+stride_i*i ) ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,3>::operator()( uint k , uint j )
+inline Type* Multi_array<Type,3>::operator()( uint64_t k , uint64_t j )
 {
 	return (Type*)displace( stride_k*k + stride_j*j ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,3>::operator()( uint k )
+inline Type* Multi_array<Type,3>::operator()( uint64_t k )
 {
 	return (Type*)displace( stride_k*k ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,3>::operator[]( uint k )
+inline Type* Multi_array<Type,3>::operator[]( uint64_t k )
 {
 	return (Type*)displace( stride_k*k ) ;
 };
 
 template<class Type>
-inline Type& Multi_array<Type,3>::operator ()( uint k , uint j , uint i ) const
+inline Type& Multi_array<Type,3>::operator ()( uint64_t k , uint64_t j , uint64_t i ) const
 {
 	return *( (Type*)displace( stride_k*k+stride_j*j+stride_i*i ) ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,3>::operator()( uint k , uint j ) const
+inline Type* Multi_array<Type,3>::operator()( uint64_t k , uint64_t j ) const
 {
 	return (Type*)displace( stride_k*k + stride_j*j ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,3>::operator()( uint k ) const
+inline Type* Multi_array<Type,3>::operator()( uint64_t k ) const
 {
 	return  (Type*)displace( stride_k*k ) ;
 };
 
 template<class Type>
-inline Type* Multi_array<Type,3>::operator[]( uint k ) const
+inline Type* Multi_array<Type,3>::operator[]( uint64_t k ) const
 {
 	return  (Type*)displace( stride_k*k ) ;
 };

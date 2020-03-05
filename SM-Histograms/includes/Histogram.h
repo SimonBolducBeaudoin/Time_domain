@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../SM-Multi_array/Multi_array.h"
 #include "../../SM-Moments_cumulants/includes/moments_cumulants.h"
 #include "../../SM-Omp_extra/includes/omp_extra.h"
 
@@ -77,6 +78,8 @@ class Histogram
 		uint64_t nofbins ;
 		int n_threads ;
 		BinType* histogram ;
+        
+        Multi_array<double,1> data ;
 		
 		// Checks
 		void Check_parity() ;
